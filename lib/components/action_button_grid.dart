@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bithealth_front_end/pages/news_page.dart';
 
 class ActionButtonGrid extends StatelessWidget {
   const ActionButtonGrid({super.key});
@@ -6,14 +7,19 @@ class ActionButtonGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final buttons = [
-      _ButtonData("Unidades de Saúde", Icons.location_on),
-      _ButtonData("Médicos", Icons.person),
-      _ButtonData("Plantões", Icons.access_time),
-      _ButtonData("Medicamentos", Icons.medication),
-      _ButtonData("Vacinação", Icons.vaccines),
-      _ButtonData("Serviços", Icons.list),
-      _ButtonData("Notícias", Icons.article),
-      _ButtonData("Notificações", Icons.notifications),
+      _ButtonData("Unidades de Saúde", Icons.location_on, () {}),
+      _ButtonData("Médicos", Icons.person, () {}),
+      _ButtonData("Plantões", Icons.access_time, () {}),
+      _ButtonData("Medicamentos", Icons.medication, () {}),
+      _ButtonData("Vacinação", Icons.vaccines, () {}),
+      _ButtonData("Serviços", Icons.list, () {}),
+      _ButtonData("Notícias", Icons.article, () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const NewsPage()),
+        );
+      }),
+      _ButtonData("Notificações", Icons.notifications, () {}),
     ];
 
     return Container(
@@ -39,8 +45,9 @@ class ActionButtonGrid extends StatelessWidget {
 class _ButtonData {
   final String label;
   final IconData icon;
+  final VoidCallback onPressed;
 
-  _ButtonData(this.label, this.icon);
+  _ButtonData(this.label, this.icon, this.onPressed);
 }
 
 class _GridButton extends StatelessWidget {
@@ -51,7 +58,7 @@ class _GridButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
-      onPressed: () {},
+      onPressed: data.onPressed,
       icon: Icon(data.icon, color: Colors.blue),
       label: Text(
         data.label,
