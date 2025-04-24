@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../components/action_button_grid.dart';
 import '../components/bottom_nav_bar.dart';
+import 'login_page.dart';  
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -38,7 +39,12 @@ class HomePage extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  );
+                },
                 child: const Text("Entrar"),
               ),
             ),
