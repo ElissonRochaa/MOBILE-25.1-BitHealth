@@ -1,7 +1,5 @@
 // ignore_for_file: library_private_types_in_public_api
 
-import 'package:bithealth_front_end/pages/home_page.dart';
-import 'package:bithealth_front_end/pages/medicamento_page.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavBar extends StatefulWidget {
@@ -15,17 +13,19 @@ class BottomNavBar extends StatefulWidget {
 
 class _BottomNavBarState extends State<BottomNavBar> {
   void _onItemTapped(int index) {
-    if (index == widget.selectedIndex) return; // evita recriar mesma página
+    if (index == widget.selectedIndex) return; 
 
     if (index == 0) {
-      Navigator.pushReplacement(
+      Navigator.pushNamedAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
+        '/home',
+        (Route<dynamic> route) => false,
       );
     } else if (index == 3) {
-      Navigator.pushReplacement(
+      Navigator.pushNamedAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => const MedicamentosPage()),
+        '/medicamentos',
+        (Route<dynamic> route) => false,
       );
     }
   }

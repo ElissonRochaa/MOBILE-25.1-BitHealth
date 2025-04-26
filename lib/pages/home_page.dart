@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../components/action_button_grid.dart';
 import '../components/bottom_nav_bar.dart';
-import 'login_page.dart';  
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -40,9 +39,10 @@ class HomePage extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushNamedAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (context) => const LoginScreen()),
+                    '/login',
+                    (route) => false,
                   );
                 },
                 child: const Text("Entrar"),

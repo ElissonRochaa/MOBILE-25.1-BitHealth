@@ -1,11 +1,32 @@
 import 'package:bithealth_front_end/components/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 
-class MedicamentosPage extends StatelessWidget {
+class MedicamentosPage extends StatefulWidget {
   const MedicamentosPage({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
+  _MedicamentosPageState createState() => _MedicamentosPageState();
+}
+
+class _MedicamentosPageState extends State<MedicamentosPage> {
+  String searchQuery = '';
+  String selectedFilter = 'Todos';
+
+  // Exemplo de lista de medicamentos
+  List<Map<String, String>> medicamentos = [
+    {'nome': 'Amoxicilina 500mg', 'tipo': 'Antibiótico'},
+    {'nome': 'Dipirona 500mg', 'tipo': 'Analgésico'},
+    // Adicione outros medicamentos aqui
+  ];
+
+  @override
   Widget build(BuildContext context) {
+    var filteredMedicamentos = medicamentos.where((med) {
+      return (selectedFilter == 'Todos' || med['tipo'] == selectedFilter) &&
+          (searchQuery.isEmpty || med['nome']!.toLowerCase().contains(searchQuery.toLowerCase()));
+    }).toList();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Medicamentos"),
@@ -24,6 +45,11 @@ class MedicamentosPage extends StatelessWidget {
           children: [
             const SizedBox(height: 16),
             TextField(
+              onChanged: (query) {
+                setState(() {
+                  searchQuery = query;
+                });
+              },
               decoration: InputDecoration(
                 hintText: 'Nome do medicamento...',
                 prefixIcon: Icon(Icons.search),
@@ -37,39 +63,62 @@ class MedicamentosPage extends StatelessWidget {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: const [
-                  FilterChip(label: Text('Todos'), onSelected: null),
+                children: [
+                  FilterChip(
+                    label: Text('Todos'),
+                    selected: selectedFilter == 'Todos',
+                    onSelected: (bool value) {
+                      setState(() {
+                        selectedFilter = 'Todos';
+                      });
+                    },
+                  ),
                   SizedBox(width: 8),
-                  FilterChip(label: Text('Antibióticos'), onSelected: null),
+                  FilterChip(
+                    label: Text('Antibióticos'),
+                    selected: selectedFilter == 'Antibióticos',
+                    onSelected: (bool value) {
+                      setState(() {
+                        selectedFilter = 'Antibióticos';
+                      });
+                    },
+                  ),
                   SizedBox(width: 8),
-                  FilterChip(label: Text('Analgésicos'), onSelected: null),
+                  FilterChip(
+                    label: Text('Analgésicos'),
+                    selected: selectedFilter == 'Analgésicos',
+                    onSelected: (bool value) {
+                      setState(() {
+                        selectedFilter = 'Analgésicos';
+                      });
+                    },
+                  ),
                   SizedBox(width: 8),
-                  FilterChip(label: Text('Uso Contínuo'), onSelected: null),
+                  FilterChip(
+                    label: Text('Uso Contínuo'),
+                    selected: selectedFilter == 'Uso Contínuo',
+                    onSelected: (bool value) {
+                      setState(() {
+                        selectedFilter = 'Uso Contínuo';
+                      });
+                    },
+                  ),
                 ],
               ),
             ),
             const SizedBox(height: 24),
             Expanded(
               child: ListView(
-                children: [
-                  _MedicamentoCard(
-                    nome: 'Amoxicilina 500mg',
-                    tipo: 'Antibiótico',
+                children: filteredMedicamentos.map((medicamento) {
+                  return _MedicamentoCard(
+                    nome: medicamento['nome']!,
+                    tipo: medicamento['tipo']!,
                     disponivel: {
                       'Hospital Municipal': 320,
                       'Farmácia Municipal': 150,
                     },
-                  ),
-                  _MedicamentoCard(
-                    nome: 'Dipirona 500mg',
-                    tipo: 'Analgésico',
-                    disponivel: {
-                      'Hospital Municipal': 500,
-                      'UBS Centro': 200,
-                      'Farmácia Municipal': 350,
-                    },
-                  ),
-                ],
+                  );
+                }).toList(),
               ),
             ),
           ],

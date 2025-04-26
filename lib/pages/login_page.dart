@@ -1,6 +1,5 @@
 
 import 'package:flutter/material.dart';
-import 'cadastro_page.dart';
 import '../components/bottom_nav_bar.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,6 +12,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  int _selectedIndex = 0;
+
 
   @override
   void dispose() {
@@ -22,10 +23,19 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _navegarParaCadastro() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const CadastroScreen(),
-      ),
+    setState(() {
+      _selectedIndex = 0;
+    });
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      '/home',
+      (Route<dynamic> route) => false,
+    );
+  }
+
+  void _navegarParaHome() {
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      '/home',
+      (Route<dynamic> route) => false,
     );
   }
 
@@ -246,7 +256,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               
               OutlinedButton(
-                onPressed: () {},
+                onPressed: _navegarParaHome,
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFF3366CC)),
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -266,7 +276,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: const BottomNavBar(selectedIndex: 0),
+      bottomNavigationBar: BottomNavBar(selectedIndex: _selectedIndex),
     );
   }
 }

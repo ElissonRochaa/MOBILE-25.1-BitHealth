@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'login_page.dart';
 import '../components/bottom_nav_bar.dart';
 
 
@@ -47,10 +46,9 @@ class _CadastroScreenState extends State<CadastroScreen> {
   }
 
   void _navegarParaLogin() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => const LoginScreen(),
-      ),
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      '/login',
+      (Route<dynamic> route) => false,
     );
   }
 
