@@ -27,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _selectedIndex = 0;
     });
     Navigator.of(context).pushNamedAndRemoveUntil(
-      '/home',
+      '/cadastro',
       (Route<dynamic> route) => false,
     );
   }
