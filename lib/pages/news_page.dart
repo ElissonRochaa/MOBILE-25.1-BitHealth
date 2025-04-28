@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../components/bottom_nav_bar.dart';
+
 
 class NewsPage extends StatelessWidget {
   const NewsPage({super.key});
@@ -58,6 +60,7 @@ class NewsPage extends StatelessWidget {
             ),
           ],
         ),
+        bottomNavigationBar: const BottomNavBar(selectedIndex: 0),
       ),
     );
   }
