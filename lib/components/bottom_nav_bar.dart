@@ -13,7 +13,6 @@ class BottomNavBar extends StatefulWidget {
 
 class _BottomNavBarState extends State<BottomNavBar> {
   void _onItemTapped(int index) {
-    if (index == widget.selectedIndex) return; 
 
     if (index == 0) {
       Navigator.pushNamedAndRemoveUntil(

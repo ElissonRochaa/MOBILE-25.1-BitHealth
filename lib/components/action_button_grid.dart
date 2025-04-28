@@ -14,10 +14,7 @@ class ActionButtonGrid extends StatelessWidget {
       _ButtonData("Vacinação", Icons.vaccines, () {}),
       _ButtonData("Serviços", Icons.list, () {}),
       _ButtonData("Notícias", Icons.article, () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const NewsPage()),
-        );
+        Navigator.pushNamed(context, '/noticias');
       }),
       _ButtonData("Notificações", Icons.notifications, () {}),
     ];

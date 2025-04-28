@@ -1,6 +1,7 @@
 import 'package:bithealth_front_end/pages/cadastro_page.dart';
 import 'package:bithealth_front_end/pages/login_page.dart';
 import 'package:bithealth_front_end/pages/medicamento_page.dart';
+import 'package:bithealth_front_end/pages/news_page.dart';
 import 'package:flutter/material.dart';
 import './pages/home_page.dart';
 
@@ -26,6 +27,7 @@ class SaudeCorrentesApp extends StatelessWidget {
         '/medicamentos': (context) => const MedicamentosPage(),
         '/login': (context) => const LoginScreen(),
         '/cadastro': (context) => const CadastroScreen(),
+        '/noticias': (context) => const NewsPage(),
       },
     );
   }
