@@ -111,7 +111,7 @@ class _ServicesPageState extends State<ServicesPage> {
           ],
         ),
       ),
-      bottomNavigationBar: const BottomNavBar(selectedIndex: 1),
+      bottomNavigationBar: const BottomNavBar(selectedIndex: 0),
     );
   }
 }
