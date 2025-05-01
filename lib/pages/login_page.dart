@@ -52,7 +52,6 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = true;
     });
 
-
     try {
       final usuarioLogin = LoginDTO(email: _emailController.text,  senha: _passwordController.text);
 
@@ -61,8 +60,6 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
       _isLoading = false;
     });
-
-    
 
     if (resultado is String) {
       Map<String, dynamic> map = jsonDecode(resultado);
