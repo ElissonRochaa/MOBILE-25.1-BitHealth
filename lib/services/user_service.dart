@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:bithealth_front_end/utils/url.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/usuario_model.dart';
+import '../dtos/user_dto.dart';
 
 class UsuarioService {
   static const String baseUrl = url;

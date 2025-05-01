@@ -1,4 +1,4 @@
-import 'package:bithealth_front_end/pages/cadastro_page.dart';
+import 'package:bithealth_front_end/pages/register_page.dart';
 import 'package:bithealth_front_end/pages/login_page.dart';
 import 'package:bithealth_front_end/pages/medicamento_page.dart';
 import 'package:bithealth_front_end/pages/news_page.dart';

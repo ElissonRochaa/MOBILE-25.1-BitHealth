@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../components/bottom_nav_bar.dart';
-import '../models/usuario_model.dart';
-import '../services/usuario_service.dart';
+import '../dtos/user_dto.dart';
+import '../services/user_service.dart';
 
 class CadastroScreen extends StatefulWidget {
   const CadastroScreen({super.key});
