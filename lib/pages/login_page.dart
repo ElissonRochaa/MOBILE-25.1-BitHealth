@@ -1,4 +1,6 @@
 
+import 'package:bithealth_front_end/dtos/login_dto.dart';
+import 'package:bithealth_front_end/services/user_service.dart';
 import 'package:flutter/material.dart';
 import '../components/bottom_nav_bar.dart';
 
@@ -12,6 +14,9 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  bool _isLoading = false;
+
   int _selectedIndex = 0;
 
 
@@ -37,6 +42,41 @@ class _LoginScreenState extends State<LoginScreen> {
       '/home',
       (Route<dynamic> route) => false,
     );
+  }
+
+  Future<void> _loginUsuario() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+
+    try {
+      final usuarioLogin = LoginDTO(email: _emailController.text,  senha: _passwordController.text);
+
+      final resultado = await UsuarioService.login(usuarioLogin.email, usuarioLogin.senha);
+
+      setState(() {
+      _isLoading = false;
+    });
+
+    if (!mounted) return;
+
+    if (resultado.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Login realizado com sucesso!')),
+        );
+        _navegarParaHome();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Erro ao realizar login. Tente novamente.')),
+      );
+    }
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro $e')),
+    );
+    }
   }
 
   @override
@@ -191,7 +231,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               
               ElevatedButton(
-                onPressed: () {},
+                onPressed: _loginUsuario,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF3366CC),
                   foregroundColor: Colors.white,
