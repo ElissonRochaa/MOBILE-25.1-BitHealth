@@ -1,3 +1,4 @@
+import 'package:bithealth_front_end/pages/doctor_page.dart';
 import 'package:bithealth_front_end/pages/register_page.dart';
 import 'package:bithealth_front_end/pages/login_page.dart';
 import 'package:bithealth_front_end/pages/medicamento_page.dart';
@@ -32,6 +33,7 @@ class SaudeCorrentesApp extends StatelessWidget {
         '/noticias': (context) => const NewsPage(),
         '/servicos': (context) => const ServicesPage(),
         '/vacinacao': (context) => const VaccinationPage(),
+        '/medicos': (context) => const  DoctorsPage(),
       },
     );
   }

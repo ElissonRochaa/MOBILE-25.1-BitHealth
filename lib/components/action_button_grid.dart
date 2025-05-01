@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:bithealth_front_end/pages/news_page.dart';
 
 class ActionButtonGrid extends StatelessWidget {
   const ActionButtonGrid({super.key});
@@ -8,7 +7,9 @@ class ActionButtonGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final buttons = [
       _ButtonData("Unidades de Saúde", Icons.location_on, () {}),
-      _ButtonData("Médicos", Icons.person, () {}),
+      _ButtonData("Médicos", Icons.person, () {
+        Navigator.pushNamed(context, '/medicos');
+      }),
       _ButtonData("Plantões", Icons.access_time, () {}),
       _ButtonData("Medicamentos", Icons.medication, () {}),
       _ButtonData("Vacinação", Icons.vaccines, () {

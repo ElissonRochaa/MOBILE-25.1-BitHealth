@@ -25,6 +25,7 @@ class VaccinationPage extends StatefulWidget {
   const VaccinationPage({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _VaccinationPageState createState() => _VaccinationPageState();
 }
 
