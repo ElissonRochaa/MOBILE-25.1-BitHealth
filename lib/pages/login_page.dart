@@ -1,7 +1,10 @@
 
+import 'dart:convert';
+
 import 'package:bithealth_front_end/dtos/login_dto.dart';
 import 'package:bithealth_front_end/services/user_service.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import '../components/bottom_nav_bar.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -58,6 +61,13 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
       _isLoading = false;
     });
+
+    
+
+    if (resultado is String) {
+      Map<String, dynamic> map = jsonDecode(resultado);
+      await UsuarioService.salvarToken(map["token"]);
+    }
 
     if (!mounted) return;
 
