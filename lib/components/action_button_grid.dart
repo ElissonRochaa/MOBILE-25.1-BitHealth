@@ -21,7 +21,9 @@ class ActionButtonGrid extends StatelessWidget {
       _ButtonData("Notícias", Icons.article, () {
         Navigator.pushNamed(context, '/noticias');
       }),
-      _ButtonData("Notificações", Icons.notifications, () {}),
+      _ButtonData("Notificações", Icons.notifications, () {
+        Navigator.pushNamed(context, '/notificacoes');
+      }),
     ];
 
     return Container(

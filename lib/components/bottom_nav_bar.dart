@@ -32,7 +32,14 @@ class _BottomNavBarState extends State<BottomNavBar> {
         '/medicos',
         (Route<dynamic> route) => false,
       );
+    } else if (index == 4) {
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        '/notificacoes',
+        (Route<dynamic> route) => false,
+      );
     }
+
   }
 
   @override
