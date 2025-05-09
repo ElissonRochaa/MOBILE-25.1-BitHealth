@@ -13,11 +13,9 @@ class _MedicamentosPageState extends State<MedicamentosPage> {
   String searchQuery = '';
   String selectedFilter = 'Todos';
 
-  // Exemplo de lista de medicamentos
   List<Map<String, String>> medicamentos = [
     {'nome': 'Amoxicilina 500mg', 'tipo': 'Antibiótico'},
     {'nome': 'Dipirona 500mg', 'tipo': 'Analgésico'},
-    // Adicione outros medicamentos aqui
   ];
 
   @override

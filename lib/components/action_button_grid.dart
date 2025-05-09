@@ -6,25 +6,56 @@ class ActionButtonGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final buttons = [
-      _ButtonData("Unidades de Saúde", Icons.location_on, () {}),
       _ButtonData("Médicos", Icons.person, () {
-        Navigator.pushNamed(context, '/medicos');
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/medicos',
+          (Route<dynamic> route) => false,
+        );
       }),
       _ButtonData("Plantões", Icons.access_time, () {}),
-      _ButtonData("Medicamentos", Icons.medication, () {}),
+      _ButtonData("Medicamentos", Icons.medication, () {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/medicamentos',
+          (Route<dynamic> route) => false,
+        );
+      }),
       _ButtonData("Vacinação", Icons.vaccines, () {
-        Navigator.pushNamed(context, '/vacinacao');
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/vacinacao',
+          (Route<dynamic> route) => false,
+        );
       }),
       _ButtonData("Serviços", Icons.list, () {
-        Navigator.pushNamed(context, '/servicos');
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/servicos',
+          (Route<dynamic> route) => false,
+        );
       }),
       _ButtonData("Notícias", Icons.article, () {
-        Navigator.pushNamed(context, '/noticias');
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/noticias',
+          (Route<dynamic> route) => false,
+        );
       }),
       _ButtonData("Notificações", Icons.notifications, () {
-        Navigator.pushNamed(context, '/notificacoes');
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/notificacoes',
+          (Route<dynamic> route) => false,
+        );
       }),
-    ];
+      _ButtonData("Mapa", Icons.map, () {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/mapa',
+          (Route<dynamic> route) => false,
+        );
+      }),];
 
     return Container(
       padding: const EdgeInsets.all(8),
