@@ -8,6 +8,7 @@ import 'package:bithealth_front_end/pages/vaccination_page.dart';
 import 'package:bithealth_front_end/pages/notifications_page.dart';
 import 'package:flutter/material.dart';
 import './pages/home_page.dart';
+import './pages/maps_page.dart';
 
 void main() {
   runApp(const SaudeCorrentesApp());
@@ -34,8 +35,9 @@ class SaudeCorrentesApp extends StatelessWidget {
         '/noticias': (context) => const NewsPage(),
         '/servicos': (context) => const ServicesPage(),
         '/vacinacao': (context) => const VaccinationPage(),
-        '/medicos': (context) => const  DoctorsPage(),
-        '/notificacoes': (context) => const  NotificationsPage()
+        '/medicos': (context) => const DoctorsPage(),
+        '/notificacoes': (context) => const NotificationsPage(),
+        '/mapa': (context) => const MapaPage(),
       },
     );
   }

@@ -20,6 +20,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
         '/home',
         (Route<dynamic> route) => false,
       );
+    } else if (index == 1) {
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        '/mapa',
+        (Route<dynamic> route) => false,
+      );
     } else if (index == 3) {
       Navigator.pushNamedAndRemoveUntil(
         context,

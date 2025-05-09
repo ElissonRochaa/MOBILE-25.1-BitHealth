@@ -1,10 +1,11 @@
 
+// ignore_for_file: unused_field
+
 import 'dart:convert';
 
 import 'package:bithealth_front_end/dtos/login_dto.dart';
 import 'package:bithealth_front_end/services/user_service.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import '../components/bottom_nav_bar.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -61,6 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = false;
     });
 
+    // ignore: unnecessary_type_check
     if (resultado is String) {
       Map<String, dynamic> map = jsonDecode(resultado);
       await UsuarioService.salvarToken(map["token"]);
