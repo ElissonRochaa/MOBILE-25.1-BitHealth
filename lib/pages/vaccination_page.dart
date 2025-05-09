@@ -170,8 +170,8 @@ class _VaccinationPageState extends State<VaccinationPage> {
         });
       },
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(activeTab == tab ? Colors.white : Colors.grey.shade100),
-        foregroundColor: MaterialStateProperty.all(activeTab == tab ? Colors.blue.shade800 : Colors.grey.shade500),
+        backgroundColor: WidgetStateProperty.all(activeTab == tab ? Colors.white : Colors.grey.shade100),
+        foregroundColor: WidgetStateProperty.all(activeTab == tab ? Colors.blue.shade800 : Colors.grey.shade500),
       ),
       child: Text(text),
     );
@@ -186,12 +186,13 @@ class _VaccinationPageState extends State<VaccinationPage> {
         });
       },
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(activeAgeGroup == group ? Colors.white : Colors.grey.shade100),
-        foregroundColor: MaterialStateProperty.all(activeAgeGroup == group ? Colors.blue.shade800 : Colors.grey.shade500),
+        backgroundColor: WidgetStateProperty.all(activeAgeGroup == group ? Colors.white : Colors.grey.shade100),
+        foregroundColor: WidgetStateProperty.all(activeAgeGroup == group ? Colors.blue.shade800 : Colors.grey.shade500),
       ),
       child: Text(text),
     );
   }
+
 
   // Função auxiliar para criar um container com bordas arredondadas e sombra
   Widget _buildContainerWithShadow({required Widget child}) {
