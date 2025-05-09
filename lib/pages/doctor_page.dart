@@ -5,7 +5,6 @@ class DoctorsPage extends StatefulWidget {
   const DoctorsPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _DoctorsPageState createState() => _DoctorsPageState();
 }
 
@@ -14,7 +13,6 @@ class _DoctorsPageState extends State<DoctorsPage> {
   String _selectedSpecialty = '';
   bool _isSpecialtyDropdownOpen = false;
   
-  // Lista de especialidades disponíveis
   final List<String> _specialties = [
     'Todas',
     'Cardiologia',
@@ -25,7 +23,6 @@ class _DoctorsPageState extends State<DoctorsPage> {
     'Clínica Geral',
   ];
 
-  // Dados mockados de médicos
   final List<Map<String, dynamic>> _doctors = [
     {
       'name': 'Dra. Maria Santos',
@@ -73,10 +70,8 @@ class _DoctorsPageState extends State<DoctorsPage> {
 
   List<Map<String, dynamic>> get filteredDoctors {
     return _doctors.where((doctor) {
-      // Filtro por nome
       final nameMatch = doctor['name'].toLowerCase().contains(_searchController.text.toLowerCase());
       
-      // Filtro por especialidade
       final specialtyMatch = _selectedSpecialty.isEmpty || 
                            _selectedSpecialty == 'Todas' || 
                            doctor['specialty'] == _selectedSpecialty;
@@ -106,7 +101,6 @@ class _DoctorsPageState extends State<DoctorsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 10),
-            // Título da página de médicos
             Container(
               padding: const EdgeInsets.all(4),
               child: const Text(
@@ -115,10 +109,8 @@ class _DoctorsPageState extends State<DoctorsPage> {
               ),
             ),
             const SizedBox(height: 10),
-            // Container do buscador (REDUZIDO)
             _buildSearchContainer(),
             const SizedBox(height: 10),
-            // Lista de médicos
             Expanded(
               child: filteredDoctors.isEmpty
                   ? Center(
@@ -181,7 +173,6 @@ class _DoctorsPageState extends State<DoctorsPage> {
             ],
           ),
           const SizedBox(height: 8),
-          // Campo de busca por nome
           Container(
             height: 40,
             decoration: BoxDecoration(
@@ -299,7 +290,6 @@ class _DoctorsPageState extends State<DoctorsPage> {
     );
   }
 
-  // Função auxiliar para criar o cartão de informações do médico
   Widget _buildDoctorCard({
     required String name,
     required String crm,
