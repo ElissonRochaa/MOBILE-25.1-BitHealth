@@ -96,7 +96,6 @@ class _LoginScreenState extends State<LoginScreen> {
         elevation: 0,
         title: Row(
           children: [
-            const Icon(Icons.menu, color: Color(0xFF3366CC)),
             const SizedBox(width: 10),
             Text(
               'Saúde Correntes',

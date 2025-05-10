@@ -37,10 +37,6 @@ class _VaccinationPageState extends State<VaccinationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.menu, color: Colors.blue),
-          onPressed: () {},
-        ),
         title: const Text(
           "Saúde Correntes",
           style: TextStyle(color: Colors.blue, fontSize: 22, fontWeight: FontWeight.bold),
