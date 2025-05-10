@@ -49,13 +49,6 @@ class HomePage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: () {},
-                child: const Text("Continuar como Visitante"),
-              ),
-            ),
           ],
         ),
       ),
