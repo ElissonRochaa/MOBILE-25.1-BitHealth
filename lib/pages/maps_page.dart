@@ -61,10 +61,6 @@ class _MapaPageState extends State<MapaPage> {
         backgroundColor: Colors.white,
         foregroundColor: Colors.blue.shade800,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {},
-        ),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),

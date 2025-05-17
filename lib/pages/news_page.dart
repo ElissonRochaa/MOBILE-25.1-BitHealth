@@ -16,10 +16,6 @@ class NewsPage extends StatelessWidget {
           backgroundColor: Colors.white,
           foregroundColor: Colors.blue.shade800,
           elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () {},
-          ),
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,7 +76,6 @@ class DengueAlert extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       child: Row(
         children: [
-          const Icon(Icons.warning_amber_rounded, color: Colors.red),
           const SizedBox(width: 8),
           Expanded(
             child: RichText(
