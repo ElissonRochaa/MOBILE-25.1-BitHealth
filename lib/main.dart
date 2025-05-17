@@ -1,14 +1,14 @@
-import 'package:bithealth_front_end/pages/doctor_page.dart';
-import 'package:bithealth_front_end/pages/register_page.dart';
-import 'package:bithealth_front_end/pages/login_page.dart';
-import 'package:bithealth_front_end/pages/medicamento_page.dart';
-import 'package:bithealth_front_end/pages/news_page.dart';
-import 'package:bithealth_front_end/pages/services_page.dart';
-import 'package:bithealth_front_end/pages/vaccination_page.dart';
-import 'package:bithealth_front_end/pages/notifications_page.dart';
+import 'package:bithealth_front_end/view/pages/doctor_page.dart';
+import 'package:bithealth_front_end/view/pages/register_page.dart';
+import 'package:bithealth_front_end/view/pages/login_page.dart';
+import 'package:bithealth_front_end/view/pages/medicamento_page.dart';
+import 'package:bithealth_front_end/view/pages/news_page.dart';
+import 'package:bithealth_front_end/view/pages/services_page.dart';
+import 'package:bithealth_front_end/view/pages/vaccination_page.dart';
+import 'package:bithealth_front_end/view/pages/notifications_page.dart';
 import 'package:flutter/material.dart';
-import './pages/home_page.dart';
-import './pages/maps_page.dart';
+import 'view/pages/home_page.dart';
+import 'view/pages/maps_page.dart';
 
 void main() {
   runApp(const SaudeCorrentesApp());
