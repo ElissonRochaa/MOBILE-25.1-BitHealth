@@ -7,6 +7,7 @@ class MapaPage extends StatefulWidget {
   const MapaPage({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _MapaPageState createState() => _MapaPageState();
 }
 
