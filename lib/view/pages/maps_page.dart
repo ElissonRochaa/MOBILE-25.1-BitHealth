@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:bithealth_front_end/components/bottom_nav_bar.dart';
+import 'package:bithealth_front_end/view/components/bottom_nav_bar.dart';
 
 class MapaPage extends StatefulWidget {
   const MapaPage({super.key});

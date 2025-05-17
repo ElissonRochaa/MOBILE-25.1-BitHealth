@@ -3,7 +3,7 @@
 
 import 'dart:convert';
 
-import 'package:bithealth_front_end/dtos/login_dto.dart';
+import 'package:bithealth_front_end/services/dtos/login_dto.dart';
 import 'package:bithealth_front_end/services/user_service.dart';
 import 'package:flutter/material.dart';
 import '../components/bottom_nav_bar.dart';

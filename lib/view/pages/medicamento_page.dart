@@ -1,4 +1,4 @@
-import 'package:bithealth_front_end/components/bottom_nav_bar.dart';
+import 'package:bithealth_front_end/view/components/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 
 class MedicamentosPage extends StatefulWidget {
