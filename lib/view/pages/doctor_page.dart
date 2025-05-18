@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../components/bottom_nav_bar.dart';
+import '../components/SearchFilterWidget.dart';
 
 class DoctorsPage extends StatefulWidget {
   const DoctorsPage({super.key});
@@ -11,7 +12,6 @@ class DoctorsPage extends StatefulWidget {
 class _DoctorsPageState extends State<DoctorsPage> {
   final TextEditingController _searchController = TextEditingController();
   String _selectedSpecialty = '';
-  bool _isSpecialtyDropdownOpen = false;
   
   final List<String> _specialties = [
     'Todas',
@@ -71,13 +71,15 @@ class _DoctorsPageState extends State<DoctorsPage> {
   List<Map<String, dynamic>> get filteredDoctors {
     return _doctors.where((doctor) {
       final nameMatch = doctor['name'].toLowerCase().contains(_searchController.text.toLowerCase());
-      
-      final specialtyMatch = _selectedSpecialty.isEmpty || 
-                           _selectedSpecialty == 'Todas' || 
-                           doctor['specialty'] == _selectedSpecialty;
-      
+      final specialtyMatch = _selectedSpecialty.isEmpty || doctor['specialty'] == _selectedSpecialty;
       return nameMatch && specialtyMatch;
     }).toList();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -105,7 +107,22 @@ class _DoctorsPageState extends State<DoctorsPage> {
               ),
             ),
             const SizedBox(height: 10),
-            _buildSearchContainer(),
+            SearchFilterWidget(
+              title: 'Buscar Médicos',
+              subtitle: 'Por nome ou especialidade',
+              searchHint: 'Nome do médico...',
+              options: _specialties,
+              selectedOption: _selectedSpecialty,
+              searchController: _searchController,
+              onSearchChanged: (value) {
+                setState(() {});
+              },
+              onOptionSelected: (value) {
+                setState(() {
+                  _selectedSpecialty = value;
+                });
+              },
+            ),
             const SizedBox(height: 10),
             Expanded(
               child: filteredDoctors.isEmpty
@@ -133,156 +150,6 @@ class _DoctorsPageState extends State<DoctorsPage> {
         ),
       ),
       bottomNavigationBar: const BottomNavBar(selectedIndex: 2),
-    );
-  }
-
-  Widget _buildSearchContainer() {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.grey.shade300, spreadRadius: 1, blurRadius: 5)],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.search, color: Colors.blue, size: 20),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text(
-                      "Buscar Médicos",
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
-                    ),
-                    Text(
-                      "Por nome ou especialidade",
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Container(
-            height: 40,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: TextField(
-              controller: _searchController,
-              style: const TextStyle(fontSize: 14),
-              textAlign: TextAlign.start,
-              decoration: InputDecoration(
-                hintText: 'Nome do médico...',
-                hintStyle: const TextStyle(fontSize: 14),
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                prefixIconConstraints: const BoxConstraints(minWidth: 30, maxWidth: 30),
-                prefixIcon: const Icon(Icons.search, color: Colors.blue, size: 20),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear, color: Colors.grey, size: 18),
-                        onPressed: () {
-                          setState(() {
-                            _searchController.clear();
-                          });
-                        },
-                      )
-                    : null,
-              ),
-              onChanged: (value) {
-                setState(() {});
-              },
-            ),
-          ),
-          const SizedBox(height: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _isSpecialtyDropdownOpen = !_isSpecialtyDropdownOpen;
-                  });
-                },
-                child: Container(
-                  height: 40,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        _selectedSpecialty.isEmpty ? 'Especialidade' : _selectedSpecialty,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: _selectedSpecialty.isEmpty ? Colors.grey : Colors.black,
-                        ),
-                      ),
-                      Icon(
-                        _isSpecialtyDropdownOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                        color: Colors.grey,
-                        size: 20,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              if (_isSpecialtyDropdownOpen)
-                Container(
-                  constraints: const BoxConstraints(maxHeight: 150),
-                  margin: const EdgeInsets.only(top: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [BoxShadow(color: Colors.grey.shade300, spreadRadius: 1, blurRadius: 5)],
-                  ),
-                  child: ListView(
-                    shrinkWrap: true,
-                    children: _specialties.map((specialty) => 
-                      InkWell(
-                        onTap: () {
-                          setState(() {
-                            _selectedSpecialty = specialty;
-                            _isSpecialtyDropdownOpen = false;
-                          });
-                        },
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                          decoration: BoxDecoration(
-                            color: _selectedSpecialty == specialty ? Colors.blue.shade50 : Colors.white,
-                            border: Border(
-                              bottom: BorderSide(
-                                color: Colors.grey.shade200,
-                                width: 1,
-                              ),
-                            ),
-                          ),
-                          child: Text(
-                            specialty,
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ),
-                      ),
-                    ).toList(),
-                  ),
-                ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 
