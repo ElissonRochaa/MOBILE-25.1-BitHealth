@@ -10,7 +10,7 @@ class MedicamentosController extends ChangeNotifier {
   List<MedicamentosModel> medicamentos = [];
   bool isLoading = false;
 
-  Future<void> loadReceitas() async {
+  Future<void> loadMedicamentos() async {
     isLoading = true;
     notifyListeners();
 

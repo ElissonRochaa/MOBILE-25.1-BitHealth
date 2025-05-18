@@ -3,7 +3,8 @@ class MedicamentosModel {
   final String nome;
   final String descricao;
   final int quantidade;
-  final String tipoMedicamento;  
+  final String tipoMedicamento;
+  final String? disponibilidade;  
 
   MedicamentosModel({
     this.tokenId,
@@ -11,6 +12,7 @@ class MedicamentosModel {
     required this.descricao,
     required this.quantidade,
     required this.tipoMedicamento,
+    this.disponibilidade,
   });
 
   factory MedicamentosModel.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class MedicamentosModel {
       descricao: json['descricao'],
       quantidade: json['quantidade'],
       tipoMedicamento: json['tipoMedicamento'],
+      disponibilidade: json['disponibilidade'],
     );
   }
 
@@ -30,6 +33,7 @@ class MedicamentosModel {
       'descricao': descricao,
       'quantidade': quantidade,
       'tipoMedicamento': tipoMedicamento,
+      'disponibilidade': disponibilidade,
     };
   }
 }

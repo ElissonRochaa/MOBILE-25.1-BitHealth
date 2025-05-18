@@ -1,11 +1,10 @@
 import 'dart:convert';
-import 'package:bithealth_front_end/core/url.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dtos/user_dto.dart';
 
 class UsuarioService {
-  static const String baseUrl = url;
+  static const String baseUrl = 'http://localhost:8080/api';
   
   static Future<bool> cadastrarUsuario(Usuario usuario) async {
     try {

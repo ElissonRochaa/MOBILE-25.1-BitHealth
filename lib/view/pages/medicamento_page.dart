@@ -1,11 +1,12 @@
 import 'package:bithealth_front_end/view/components/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:bithealth_front_end/services/medicamento_service.dart';
+import 'package:bithealth_front_end/model/medicamentos_model.dart';
 
 class MedicamentosPage extends StatefulWidget {
   const MedicamentosPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _MedicamentosPageState createState() => _MedicamentosPageState();
 }
 
@@ -13,18 +14,51 @@ class _MedicamentosPageState extends State<MedicamentosPage> {
   String searchQuery = '';
   String selectedFilter = 'Todos';
 
-  List<Map<String, String>> medicamentos = [
-    {'nome': 'Amoxicilina 500mg', 'tipo': 'Antibiótico'},
-    {'nome': 'Dipirona 500mg', 'tipo': 'Analgésico'},
-  ];
+  List<MedicamentosModel> medicamentos = [];
+  bool isLoading = true;
+  String? errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    carregarMedicamentos();
+  }
+
+  Future<void> carregarMedicamentos() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+    });
+
+    try {
+      final service = MedicamentoService();
+      final lista = await service.fetchMedicamentos();
+      setState(() {
+        medicamentos = lista;
+      });
+    } catch (e) {
+      setState(() {
+        errorMessage = 'Erro ao carregar medicamentos: $e';
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  List<MedicamentosModel> get filteredMedicamentos {
+    return medicamentos.where((med) {
+      final tipoMatch = selectedFilter == 'Todos' || med.tipoMedicamento == selectedFilter;
+      final nomeMatch = searchQuery.isEmpty || med.nome.toLowerCase().contains(searchQuery.toLowerCase());
+      return tipoMatch && nomeMatch;
+    }).toList();
+  }
+
+  final filtros = ['Todos', 'ORIGINAL', 'GENERICO'];
 
   @override
   Widget build(BuildContext context) {
-    var filteredMedicamentos = medicamentos.where((med) {
-      return (selectedFilter == 'Todos' || med['tipo'] == selectedFilter) &&
-          (searchQuery.isEmpty || med['nome']!.toLowerCase().contains(searchQuery.toLowerCase()));
-    }).toList();
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("Medicamentos"),
@@ -46,8 +80,8 @@ class _MedicamentosPageState extends State<MedicamentosPage> {
               },
               decoration: InputDecoration(
                 hintText: 'Nome do medicamento...',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.search),
+                border: const OutlineInputBorder(),
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.blue),
                 ),
@@ -57,64 +91,49 @@ class _MedicamentosPageState extends State<MedicamentosPage> {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: [
-                  FilterChip(
-                    label: Text('Todos'),
-                    selected: selectedFilter == 'Todos',
-                    onSelected: (bool value) {
-                      setState(() {
-                        selectedFilter = 'Todos';
-                      });
-                    },
-                  ),
-                  SizedBox(width: 8),
-                  FilterChip(
-                    label: Text('Antibióticos'),
-                    selected: selectedFilter == 'Antibióticos',
-                    onSelected: (bool value) {
-                      setState(() {
-                        selectedFilter = 'Antibióticos';
-                      });
-                    },
-                  ),
-                  SizedBox(width: 8),
-                  FilterChip(
-                    label: Text('Analgésicos'),
-                    selected: selectedFilter == 'Analgésicos',
-                    onSelected: (bool value) {
-                      setState(() {
-                        selectedFilter = 'Analgésicos';
-                      });
-                    },
-                  ),
-                  SizedBox(width: 8),
-                  FilterChip(
-                    label: Text('Uso Contínuo'),
-                    selected: selectedFilter == 'Uso Contínuo',
-                    onSelected: (bool value) {
-                      setState(() {
-                        selectedFilter = 'Uso Contínuo';
-                      });
-                    },
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            Expanded(
-              child: ListView(
-                children: filteredMedicamentos.map((medicamento) {
-                  return _MedicamentoCard(
-                    nome: medicamento['nome']!,
-                    tipo: medicamento['tipo']!,
-                    disponivel: {
-                      'Hospital Municipal': 320,
-                      'Farmácia Municipal': 150,
-                    },
+                children: filtros.map((filtro) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: FilterChip(
+                      label: Text(filtro),
+                      selected: selectedFilter == filtro,
+                      onSelected: (bool selected) {
+                        setState(() {
+                          selectedFilter = filtro;
+                        });
+                      },
+                    ),
                   );
                 }).toList(),
               ),
             ),
+            const SizedBox(height: 24),
+            if (isLoading)
+              const Expanded(child: Center(child: CircularProgressIndicator())),
+            if (errorMessage != null)
+              Expanded(
+                child: Center(
+                  child: Text(errorMessage!, style: const TextStyle(color: Colors.red)),
+                ),
+              ),
+            if (!isLoading && errorMessage == null)
+              Expanded(
+                child: filteredMedicamentos.isEmpty
+                    ? const Center(child: Text('Nenhum medicamento encontrado'))
+                    : ListView.builder(
+                        itemCount: filteredMedicamentos.length,
+                        itemBuilder: (context, index) {
+                          final med = filteredMedicamentos[index];
+                          return _MedicamentoCard(
+                            nome: med.nome,
+                            tipo: med.tipoMedicamento,
+                            disponivel: med.disponibilidade != null
+                                ? {med.disponibilidade!: 0} 
+                                : {},
+                          );
+                        },
+                      ),
+              ),
           ],
         ),
       ),
@@ -153,13 +172,15 @@ class _MedicamentoCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text("Disponível em:"),
+            if (disponivel.isEmpty)
+              Text('Sem informações', style: TextStyle(color: Colors.grey.shade600)),
             ...disponivel.entries.map(
               (entry) => Row(
                 children: [
-                  Icon(Icons.location_on, color: Colors.blue),
+                  const Icon(Icons.location_on, color: Colors.blue),
                   const SizedBox(width: 4),
                   Text(
-                    "${entry.key}: ${entry.value} un.",
+                    "${entry.key}${entry.value > 0 ? ': ${entry.value} un.' : ''}",
                     style: TextStyle(color: Colors.blue.shade800),
                   ),
                 ],
