@@ -85,6 +85,10 @@ class _MedicamentosPageState extends State<MedicamentosPage> {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           children: [
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(4),
+            ),
             const SizedBox(height: 16),
             SearchFilterWidget(
               title: 'Buscar Medicamentos',

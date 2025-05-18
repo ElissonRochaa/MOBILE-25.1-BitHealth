@@ -71,11 +71,10 @@ class _DoctorsPageState extends State<DoctorsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Saúde Correntes",
-          style: TextStyle(color: Colors.blue, fontSize: 22, fontWeight: FontWeight.bold),
-        ),
+        title: const Text("Médicos"),
         centerTitle: false,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.blue.shade800,
         elevation: 0,
       ),
       body: Padding(
@@ -86,10 +85,6 @@ class _DoctorsPageState extends State<DoctorsPage> {
             const SizedBox(height: 10),
             Container(
               padding: const EdgeInsets.all(4),
-              child: const Text(
-                "Médicos",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blue),
-              ),
             ),
             const SizedBox(height: 10),
             SearchFilterWidget(
