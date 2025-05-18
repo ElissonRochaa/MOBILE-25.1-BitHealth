@@ -1,3 +1,7 @@
+// ignore_for_file: library_private_types_in_public_api
+
+import 'package:bithealth_front_end/model/doctor_model.dart';
+import 'package:bithealth_front_end/services/doctor_service.dart';
 import 'package:flutter/material.dart';
 import '../components/bottom_nav_bar.dart';
 import '../components/SearchFilterWidget.dart';
@@ -12,66 +16,47 @@ class DoctorsPage extends StatefulWidget {
 class _DoctorsPageState extends State<DoctorsPage> {
   final TextEditingController _searchController = TextEditingController();
   String _selectedSpecialty = '';
-  
-  final List<String> _specialties = [
-    'Todas',
-    'Cardiologia',
-    'Dermatologia',
-    'Ginecologia',
-    'Ortopedia',
-    'Pediatria',
-    'Clínica Geral',
-  ];
+  List<DoctorModel> _doctors = [];
+  List<String> _specialties = ['Todas'];
+  bool _isLoading = true;
+  String? _errorMessage;
 
-  final List<Map<String, dynamic>> _doctors = [
-    {
-      'name': 'Dra. Maria Santos',
-      'crm': '23456-PE',
-      'specialty': 'Pediatria',
-      'hospital': 'Hospital Municipal de Correntes',
-      'schedule': 'Segunda a Sexta: 13h às 18h',
-    },
-    {
-      'name': 'Dr. Carlos Oliveira',
-      'crm': '34567-PE',
-      'specialty': 'Ortopedia',
-      'hospital': 'Hospital Municipal de Correntes',
-      'schedule': 'Terça e Quinta: 8h às 17h',
-    },
-    {
-      'name': 'Dra. Ana Pereira',
-      'crm': '45678-PE',
-      'specialty': 'Clínica Geral',
-      'hospital': 'UBS Centro de Correntes',
-      'schedule': 'Segunda a Sexta: 8h às 12h',
-    },
-    {
-      'name': 'Dr. João Silva',
-      'crm': '12345-PE',
-      'specialty': 'Cardiologia',
-      'hospital': 'Hospital Municipal de Correntes',
-      'schedule': 'Segunda a Sexta: 8h às 14h',
-    },
-    {
-      'name': 'Dra. Patrícia Lima',
-      'crm': '56789-PE',
-      'specialty': 'Dermatologia',
-      'hospital': 'Clínica Santa Isabel',
-      'schedule': 'Segunda, Quarta e Sexta: 14h às 18h',
-    },
-    {
-      'name': 'Dr. Roberto Almeida',
-      'crm': '67890-PE',
-      'specialty': 'Ginecologia',
-      'hospital': 'Hospital Municipal de Correntes',
-      'schedule': 'Terça e Quinta: 13h às 19h',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadDoctors();
+  }
 
-  List<Map<String, dynamic>> get filteredDoctors {
+  Future<void> _loadDoctors() async {
+    try {
+      final doctors = await DoctorService().fetchDoctors();
+
+      final extractedSpecialties = doctors
+          .map((d) => d.especialidade.trim())
+          .where((e) => e.isNotEmpty)
+          .toSet()
+          .toList()
+        ..sort();
+
+      setState(() {
+        _doctors = doctors;
+        _specialties = ['Todas', ...extractedSpecialties];
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+        _isLoading = false;
+      });
+    }
+  }
+
+  List<DoctorModel> get filteredDoctors {
     return _doctors.where((doctor) {
-      final nameMatch = doctor['name'].toLowerCase().contains(_searchController.text.toLowerCase());
-      final specialtyMatch = _selectedSpecialty.isEmpty || doctor['specialty'] == _selectedSpecialty;
+      final nameMatch = doctor.nome.toLowerCase().contains(_searchController.text.toLowerCase());
+      final specialtyMatch = _selectedSpecialty.isEmpty ||
+          _selectedSpecialty == 'Todas' ||
+          doctor.especialidade == _selectedSpecialty;
       return nameMatch && specialtyMatch;
     }).toList();
   }
@@ -125,26 +110,37 @@ class _DoctorsPageState extends State<DoctorsPage> {
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: filteredDoctors.isEmpty
-                  ? Center(
-                      child: Text(
-                        'Nenhum médico encontrado',
-                        style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
-                      ),
-                    )
-                  : ListView.builder(
-                      itemCount: filteredDoctors.length,
-                      itemBuilder: (context, index) {
-                        final doctor = filteredDoctors[index];
-                        return _buildDoctorCard(
-                          name: doctor['name'],
-                          crm: doctor['crm'],
-                          specialty: doctor['specialty'],
-                          hospital: doctor['hospital'],
-                          schedule: doctor['schedule'],
-                        );
-                      },
-                    ),
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _errorMessage != null
+                      ? Center(
+                          child: Text(
+                            _errorMessage!,
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        )
+                      : filteredDoctors.isEmpty
+                          ? Center(
+                              child: Text(
+                                'Nenhum médico encontrado',
+                                style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                              ),
+                            )
+                          : ListView.builder(
+                              itemCount: filteredDoctors.length,
+                              itemBuilder: (context, index) {
+                                final doctor = filteredDoctors[index];
+                                return _buildDoctorCard(
+                                  nome: doctor.nome,
+                                  crm: doctor.crm,
+                                  especialidade: doctor.especialidade,
+                                  unidade: doctor.unidade_saude_name,
+                                  data: doctor.data_plantao,
+                                  inicio: doctor.horario_inicio,
+                                  fim: doctor.horario_fim,
+                                );
+                              },
+                            ),
             ),
           ],
         ),
@@ -154,11 +150,13 @@ class _DoctorsPageState extends State<DoctorsPage> {
   }
 
   Widget _buildDoctorCard({
-    required String name,
+    required String nome,
     required String crm,
-    required String specialty,
-    required String hospital,
-    required String schedule,
+    required String especialidade,
+    required String unidade,
+    required String data,
+    required String inicio,
+    required String fim,
   }) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -172,12 +170,12 @@ class _DoctorsPageState extends State<DoctorsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              name,
+              nome,
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
             ),
             const SizedBox(height: 8),
             Text(
-              'CRM: $crm • $specialty',
+              'CRM: $crm • $especialidade',
               style: const TextStyle(fontSize: 14, color: Colors.grey),
             ),
             const SizedBox(height: 12),
@@ -187,7 +185,7 @@ class _DoctorsPageState extends State<DoctorsPage> {
                 const SizedBox(width: 4),
                 Expanded(
                   child: Text(
-                    hospital,
+                    unidade,
                     style: const TextStyle(fontSize: 14),
                   ),
                 ),
@@ -199,7 +197,7 @@ class _DoctorsPageState extends State<DoctorsPage> {
                 const Icon(Icons.access_time, size: 16, color: Colors.grey),
                 const SizedBox(width: 4),
                 Text(
-                  schedule,
+                  '$data - $inicio às $fim',
                   style: const TextStyle(fontSize: 14),
                 ),
               ],
