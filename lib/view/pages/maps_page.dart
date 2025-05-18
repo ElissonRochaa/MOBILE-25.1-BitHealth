@@ -1,131 +1,107 @@
+import 'package:bithealth_front_end/model/unidade_saude_model.dart';
+import 'package:bithealth_front_end/services/unidade_saude_service.dart';
+import 'package:bithealth_front_end/view/components/SearchFilterWidget.dart';
+import 'package:bithealth_front_end/view/components/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:bithealth_front_end/view/components/bottom_nav_bar.dart';
 
 class MapaPage extends StatefulWidget {
   const MapaPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _MapaPageState createState() => _MapaPageState();
+  State<MapaPage> createState() => _MapaPageState();
 }
 
 class _MapaPageState extends State<MapaPage> {
-  String searchQuery = '';
-  String selectedFilter = 'Todos';
+  final UnidadeSaudeService _unidadeSaudeService = UnidadeSaudeService();
+  List<UnidadeSaudeModel> _unidades = [];
+  String _searchQuery = '';
+  String _selectedFilter = 'Todos';
+  final TextEditingController _searchController = TextEditingController();
 
-  // Lista de unidades de saúde
-  List<Map<String, dynamic>> unidades = [
-    {
-      'nome': 'Hospital Municipal',
-      'tipo': 'Hospital',
-      'latitude': -8.2761,
-      'longitude': -36.4989,
-      'cor': Colors.red,
-    },
-    {
-      'nome': 'UBS Centro',
-      'tipo': 'UBS',
-      'latitude': -8.2721,
-      'longitude': -36.4909,
-      'cor': Colors.blue,
-    },
-    {
-      'nome': 'Farmácia Municipal',
-      'tipo': 'Farmácia',
-      'latitude': -8.2755,
-      'longitude': -36.4952,
-      'cor': Colors.green,
-    },
-    {
-      'nome': 'UPA',
-      'tipo': 'UPA',
-      'latitude': -8.2734,
-      'longitude': -36.4931,
-      'cor': Colors.yellow,
-    },
-  ];
+  // Coordenadas de Correntes, Pernambuco
+  LatLng _mapCenter = LatLng(-8.2735, -36.4933); // Posição inicial em Correntes
+  double _mapZoom = 14.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUnidades();
+  }
+
+  Future<void> _fetchUnidades() async {
+    try {
+      final unidades = await _unidadeSaudeService.fetchDoctors();
+      setState(() {
+        _unidades = unidades;
+      });
+    } catch (e) {
+      print('Erro ao carregar unidades: $e');
+    }
+  }
+
+  List<UnidadeSaudeModel> get _filteredUnidades {
+    return _unidades.where((u) {
+      final matchTipo = _selectedFilter == 'Todos' || u.tipo.toLowerCase() == _selectedFilter.toLowerCase();
+      final matchNome = _searchQuery.isEmpty || u.nome.toLowerCase().contains(_searchQuery.toLowerCase());
+      return matchTipo && matchNome;
+    }).toList();
+  }
+
+  // Método para atualizar o centro do mapa ao selecionar uma unidade
+  void _updateMapCenter(LatLng newCenter) {
+    setState(() {
+      _mapCenter = newCenter;
+      _mapZoom = 15.0; // Ajuste do zoom para melhor visualização
+    });
+  }
+
+  Color _getColorByTipo(String tipo) {
+    switch (tipo.trim().toLowerCase()) {
+      case 'hospital':
+        return Colors.red;
+      case 'ubs':
+        return Colors.blue;
+      case 'farmacia':
+        return Colors.green;
+      case 'upa':
+        return Colors.orange;
+      default:
+        return Colors.grey;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    var filteredUnidades = unidades.where((unidade) {
-      return (selectedFilter == 'Todos' || unidade['tipo'] == selectedFilter) &&
-          (searchQuery.isEmpty || unidade['nome']!.toLowerCase().contains(searchQuery.toLowerCase()));
-    }).toList();
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("Mapa de Correntes"),
-        centerTitle: false,
         backgroundColor: Colors.white,
         foregroundColor: Colors.blue.shade800,
         elevation: 0,
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            const SizedBox(height: 16),
-            TextField(
-              onChanged: (query) {
-                setState(() {
-                  searchQuery = query;
-                });
-              },
-              decoration: InputDecoration(
-                hintText: 'Buscar unidades...',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.blue),
-                ),
-              ),
+            SearchFilterWidget(
+              title: 'Unidades de Saúde',
+              subtitle: 'Filtre por nome ou tipo',
+              searchHint: 'Buscar unidades...',
+              options: const ['Todos', 'Hospital', 'UBS', 'Farmacia', 'UPA'],
+              selectedOption: _selectedFilter,
+              searchController: _searchController,
+              onSearchChanged: (query) => setState(() => _searchQuery = query),
+              onOptionSelected: (option) => setState(() => _selectedFilter = option),
             ),
             const SizedBox(height: 16),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  FilterChip(
-                    label: Text('Todos'),
-                    selected: selectedFilter == 'Todos',
-                    onSelected: (bool value) {
-                      setState(() {
-                        selectedFilter = 'Todos';
-                      });
-                    },
-                  ),
-                  SizedBox(width: 8),
-                  FilterChip(
-                    label: Text('Hospitais'),
-                    selected: selectedFilter == 'Hospitais',
-                    onSelected: (bool value) {
-                      setState(() {
-                        selectedFilter = 'Hospitais';
-                      });
-                    },
-                  ),
-                  SizedBox(width: 8),
-                  FilterChip(
-                    label: Text('Farmácias'),
-                    selected: selectedFilter == 'Farmácias',
-                    onSelected: (bool value) {
-                      setState(() {
-                        selectedFilter = 'Farmácias';
-                      });
-                    },
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            Container(
+            SizedBox(
               height: 250,
               child: FlutterMap(
                 options: MapOptions(
-                  center: LatLng(-8.2744, -36.4949), // Coordenada inicial do mapa
-                  zoom: 14,
+                  center: _mapCenter, // Centraliza o mapa com a coordenada inicial em Correntes
+                  zoom: _mapZoom,
                 ),
                 children: [
                   TileLayer(
@@ -133,16 +109,44 @@ class _MapaPageState extends State<MapaPage> {
                     subdomains: ['a', 'b', 'c'],
                   ),
                   MarkerLayer(
-                    markers: unidades.map((unidade) {
+                    markers: _filteredUnidades.map((unidade) {
+                      final lat = double.tryParse(unidade.endereco.latitude) ?? 0;
+                      final lng = double.tryParse(unidade.endereco.longitude) ?? 0;
                       return Marker(
-                        width: 80.0,
-                        height: 80.0,
-                        point: LatLng(unidade['latitude'], unidade['longitude']),
-                        builder: (ctx) => Container(
+                        width: 80,
+                        height: 80,
+                        point: LatLng(lat, lng),
+                        builder: (ctx) => GestureDetector(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text(unidade.nome),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Tipo: ${unidade.tipo}'),
+                                    Text('Início: ${unidade.horarioInicioAtendimento}'),
+                                    Text('Fim: ${unidade.horarioFimAtendimento}'),
+                                    const SizedBox(height: 8),
+                                    Text('Latitude: ${unidade.endereco.latitude}'),
+                                    Text('Longitude: ${unidade.endereco.longitude}'),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(),
+                                    child: const Text('Fechar'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
                           child: Icon(
                             Icons.location_on,
-                            color: unidade['cor'],
-                            size: 40.0,
+                            color: _getColorByTipo(unidade.tipo),
+                            size: 40,
                           ),
                         ),
                       );
@@ -153,52 +157,35 @@ class _MapaPageState extends State<MapaPage> {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: ListView(
-                children: filteredUnidades.map((unidade) {
-                  return _UnidadeCard(
-                    nome: unidade['nome']!,
-                    tipo: unidade['tipo']!,
+              child: ListView.builder(
+                itemCount: _filteredUnidades.length,
+                itemBuilder: (context, index) {
+                  final unidade = _filteredUnidades[index];
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: ListTile(
+                      leading: Icon(
+                        Icons.location_on,
+                        color: _getColorByTipo(unidade.tipo),
+                      ),
+                      title: Text(unidade.nome),
+                      subtitle: Text(
+                        '${unidade.tipo} | ${unidade.horarioInicioAtendimento} - ${unidade.horarioFimAtendimento}',
+                      ),
+                      onTap: () {
+                        final lat = double.tryParse(unidade.endereco.latitude) ?? 0;
+                        final lng = double.tryParse(unidade.endereco.longitude) ?? 0;
+                        _updateMapCenter(LatLng(lat, lng)); // Centraliza o mapa na unidade
+                      },
+                    ),
                   );
-                }).toList(),
+                },
               ),
             ),
           ],
         ),
       ),
       bottomNavigationBar: const BottomNavBar(selectedIndex: 1),
-    );
-  }
-}
-
-class _UnidadeCard extends StatelessWidget {
-  final String nome;
-  final String tipo;
-
-  const _UnidadeCard({
-    required this.nome,
-    required this.tipo,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              nome,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              tipo,
-              style: TextStyle(color: Colors.blue.shade800),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
