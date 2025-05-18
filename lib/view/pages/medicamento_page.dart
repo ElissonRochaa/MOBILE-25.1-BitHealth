@@ -2,6 +2,7 @@ import 'package:bithealth_front_end/view/components/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:bithealth_front_end/services/medicamento_service.dart';
 import 'package:bithealth_front_end/model/medicamentos_model.dart';
+import 'package:bithealth_front_end/view/components/SearchFilterWidget.dart';
 
 class MedicamentosPage extends StatefulWidget {
   const MedicamentosPage({super.key});
@@ -14,14 +15,23 @@ class _MedicamentosPageState extends State<MedicamentosPage> {
   String searchQuery = '';
   String selectedFilter = 'Todos';
 
+  final TextEditingController _searchController = TextEditingController();
+
   List<MedicamentosModel> medicamentos = [];
   bool isLoading = true;
   String? errorMessage;
+
+  final filtros = ['Todos', 'ORIGINAL', 'GENERICO'];
 
   @override
   void initState() {
     super.initState();
     carregarMedicamentos();
+    _searchController.addListener(() {
+      setState(() {
+        searchQuery = _searchController.text;
+      });
+    });
   }
 
   Future<void> carregarMedicamentos() async {
@@ -55,7 +65,11 @@ class _MedicamentosPageState extends State<MedicamentosPage> {
     }).toList();
   }
 
-  final filtros = ['Todos', 'ORIGINAL', 'GENERICO'];
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,40 +86,23 @@ class _MedicamentosPageState extends State<MedicamentosPage> {
         child: Column(
           children: [
             const SizedBox(height: 16),
-            TextField(
-              onChanged: (query) {
+            SearchFilterWidget(
+              title: 'Buscar Medicamentos',
+              subtitle: 'Por nome ou tipo',
+              searchHint: 'Nome do medicamento...',
+              options: filtros,
+              selectedOption: selectedFilter == '' ? 'Todos' : selectedFilter,
+              searchController: _searchController,
+              onSearchChanged: (value) {
                 setState(() {
-                  searchQuery = query;
+                  searchQuery = value;
                 });
               },
-              decoration: InputDecoration(
-                hintText: 'Nome do medicamento...',
-                prefixIcon: const Icon(Icons.search),
-                border: const OutlineInputBorder(),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.blue),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: filtros.map((filtro) {
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: FilterChip(
-                      label: Text(filtro),
-                      selected: selectedFilter == filtro,
-                      onSelected: (bool selected) {
-                        setState(() {
-                          selectedFilter = filtro;
-                        });
-                      },
-                    ),
-                  );
-                }).toList(),
-              ),
+              onOptionSelected: (value) {
+                setState(() {
+                selectedFilter = value.isEmpty ? 'Todos' : value;
+                });
+              },
             ),
             const SizedBox(height: 24),
             if (isLoading)
@@ -128,7 +125,7 @@ class _MedicamentosPageState extends State<MedicamentosPage> {
                             nome: med.nome,
                             tipo: med.tipoMedicamento,
                             disponivel: med.disponibilidade != null
-                                ? {med.disponibilidade!: 0} 
+                                ? {med.disponibilidade!: 0}
                                 : {},
                           );
                         },
