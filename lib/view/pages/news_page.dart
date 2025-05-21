@@ -1,9 +1,52 @@
+import 'package:bithealth_front_end/model/news_model.dart';
+import 'package:bithealth_front_end/services/news_service.dart';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import '../components/bottom_nav_bar.dart';
 
-
-class NewsPage extends StatelessWidget {
+class NewsPage extends StatefulWidget {
   const NewsPage({super.key});
+
+  @override
+  _NewsPageState createState() => _NewsPageState();
+}
+
+class _NewsPageState extends State<NewsPage> {
+  final NewsService _newsService = NewsService();
+  List<NewsModel> _newsList = [];
+  bool _isLoading = true;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadNews();
+  }
+
+  Future<void> _loadNews() async {
+    if (!mounted) return;
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final fetchedNews = await _newsService.fetchNews();
+      if (!mounted) return;
+      setState(() {
+        _newsList = fetchedNews;
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _errorMessage = "Falha ao carregar notícias: ${e.toString()}";
+        _isLoading = false;
+        _newsList = [];
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,13 +87,13 @@ class NewsPage extends StatelessWidget {
                 Tab(text: "Atualizações"),
               ],
             ),
-            const Expanded(
+            Expanded(
               child: TabBarView(
                 children: [
-                  NewsList(),
-                  Center(child: Text("Campanhas")),
-                  Center(child: Text("Serviços")),
-                  Center(child: Text("Atualizações")),
+                  _buildNewsListContent(),
+                  const Center(child: Text("Campanhas")),
+                  const Center(child: Text("Serviços")),
+                  const Center(child: Text("Atualizações")),
                 ],
               ),
             ),
@@ -58,6 +101,49 @@ class NewsPage extends StatelessWidget {
         ),
         bottomNavigationBar: const BottomNavBar(selectedIndex: 0),
       ),
+    );
+  }
+
+  Widget _buildNewsListContent() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_errorMessage != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            _errorMessage!,
+            style: const TextStyle(color: Colors.red, fontSize: 16),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+
+    if (_newsList.isEmpty) {
+      return const Center(
+        child: Text(
+          "Nenhuma notícia encontrada no momento.",
+          style: TextStyle(fontSize: 16, color: Colors.grey),
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: _newsList.length,
+      itemBuilder: (context, index) {
+        final newsItem = _newsList[index];
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16.0),
+          child: NewsCard(
+            newsItem: newsItem, 
+          ),
+        );
+      },
     );
   }
 }
@@ -88,7 +174,7 @@ class DengueAlert extends StatelessWidget {
                 children: const [
                   TextSpan(
                     text:
-                    "Aumento de casos de dengue na região. Elimine possíveis criadouros do mosquito em sua residência.",
+                        "Aumento de casos de dengue na região. Elimine possíveis criadouros do mosquito em sua residência.",
                     style: TextStyle(
                         fontWeight: FontWeight.normal,
                         color: Colors.red,
@@ -104,42 +190,12 @@ class DengueAlert extends StatelessWidget {
   }
 }
 
-class NewsList extends StatelessWidget {
-  const NewsList({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: const [
-        NewsCard(
-          title: "Campanha de Vacinação contra a Gripe começa na próxima semana",
-          date: "25/03/2023",
-          content:
-          "A Secretaria de Saúde inicia na próxima segunda-feira (01/04) a Campanha de Vacinação contra a Gripe. A vacinação é destinada a idosos, crianças, gestantes e...",
-        ),
-        SizedBox(height: 16),
-        NewsCard(
-          title: "Novo serviço de telemedicina disponível para a população",
-          date: "20/03/2023",
-          content:
-          "A partir do próximo mês, a Secretaria de Saúde disponibilizará um novo serviço de telemedicina para a população. O serviço permitirá consultas médicas...",
-        ),
-      ],
-    );
-  }
-}
-
 class NewsCard extends StatelessWidget {
-  final String title;
-  final String date;
-  final String content;
+  final NewsModel newsItem; 
 
   const NewsCard({
     super.key,
-    required this.title,
-    required this.date,
-    required this.content,
+    required this.newsItem,
   });
 
   @override
@@ -153,30 +209,92 @@ class NewsCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title,
+            Text(newsItem.titulo,
                 style: const TextStyle(
                     fontSize: 16,
                     color: Colors.blue,
                     fontWeight: FontWeight.bold)),
             const SizedBox(height: 4),
-            Text(date, style: const TextStyle(color: Colors.grey)),
+            Text(newsItem.dataPublicacao,
+                style: const TextStyle(color: Colors.grey)),
             const SizedBox(height: 8),
-            Text(content,
-                style: const TextStyle(color: Colors.black87, fontSize: 14)),
+            Text(
+              newsItem.conteudo,
+              style: const TextStyle(color: Colors.black87, fontSize: 14),
+              maxLines: 3, 
+              overflow: TextOverflow.ellipsis, 
+            ),
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            NewsDetailPage(newsItem: newsItem),
+                      ),
+                    );
+                  },
                   child: const Text("Ler mais"),
                 ),
                 IconButton(
                   icon: const Icon(Icons.share_outlined, color: Colors.blue),
-                  onPressed: () {},
+                  onPressed: () {
+                    final String shareText =
+                        '${newsItem.titulo}\n\n${newsItem.conteudo.substring(0, newsItem.conteudo.length > 150 ? 150 : newsItem.conteudo.length)}...';
+                    
+                    Share.share(shareText);
+                  },
                 ),
               ],
             )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Nova página para exibir os detalhes da notícia
+class NewsDetailPage extends StatelessWidget {
+  final NewsModel newsItem;
+
+  const NewsDetailPage({super.key, required this.newsItem});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(newsItem.titulo, style: TextStyle(color: Colors.blue.shade800, fontSize: 18)),
+        backgroundColor: Colors.white,
+        iconTheme: IconThemeData(color: Colors.blue.shade800),
+        elevation: 1,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              newsItem.titulo,
+              style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              newsItem.dataPublicacao,
+              style: const TextStyle(color: Colors.grey, fontSize: 14),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              newsItem.conteudo,
+              style: const TextStyle(fontSize: 16, height: 1.5, color: Colors.black87),
+            ),
           ],
         ),
       ),
