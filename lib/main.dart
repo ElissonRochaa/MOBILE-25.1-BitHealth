@@ -1,9 +1,11 @@
 import 'package:bithealth_front_end/view/pages/doctor_page.dart';
+import 'package:bithealth_front_end/view/pages/medical_shifts.dart';
 import 'package:bithealth_front_end/view/pages/register_page.dart';
 import 'package:bithealth_front_end/view/pages/login_page.dart';
 import 'package:bithealth_front_end/view/pages/medicamento_page.dart';
 import 'package:bithealth_front_end/view/pages/news_page.dart';
 import 'package:bithealth_front_end/view/pages/services_page.dart';
+import 'package:bithealth_front_end/view/pages/shift_schedule.dart';
 import 'package:bithealth_front_end/view/pages/vaccination_page.dart';
 import 'package:bithealth_front_end/view/pages/notifications_page.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +40,8 @@ class SaudeCorrentesApp extends StatelessWidget {
         '/medicos': (context) => const DoctorsPage(),
         '/notificacoes': (context) => const NotificationsPage(),
         '/mapa': (context) => const MapaPage(),
+        '/plantoes':(context) => const SelecaoPlantaoScreen(),
+        "/escala_plantao":(context) => const EscalaPlantaoScreen(),
       },
     );
   }
