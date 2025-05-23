@@ -5,12 +5,14 @@ class ServicesModel {
   final String descricao;
   final String horarioInicio;
   final String horarioFim;
+  final String nomeUnidade;
 
   ServicesModel({
     required this.nome,
     required this.descricao,
     required this.horarioInicio,
     required this.horarioFim,
+    required this.nomeUnidade,
   });
   factory ServicesModel.fromJson(Map<String, dynamic> json) {
     return ServicesModel(
@@ -18,6 +20,7 @@ class ServicesModel {
       descricao: json['descricao'],
       horarioInicio: json['horarioInicio'],
       horarioFim: json['horarioFim'],
+      nomeUnidade: json['nomeUnidade'],
     );
   }
 
@@ -27,6 +30,7 @@ class ServicesModel {
       'descricao': descricao,
       'horarioInicio': horarioInicio,
       'horarioFim': horarioFim,
+      'nomeUnidade': nomeUnidade,
     };
   }
 }

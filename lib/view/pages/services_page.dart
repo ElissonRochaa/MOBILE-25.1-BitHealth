@@ -1,3 +1,5 @@
+import 'package:bithealth_front_end/controller/services_controller.dart';
+import 'package:bithealth_front_end/model/services_model.dart';
 import 'package:flutter/material.dart';
 import '../components/bottom_nav_bar.dart';
 
@@ -11,42 +13,55 @@ class ServicesPage extends StatefulWidget {
 class _ServicesPageState extends State<ServicesPage> {
   final TextEditingController _serviceController = TextEditingController();
   String? _serviceType = 'Todos';
-  List<String> serviceTypes = ['Todos', 'Exames', 'Consultas', 'Procedimentos', 'Terapias'];
+  List<String> serviceTypes = ['Todos', 'Exames Laboratoriais', 'Consulta Clínica Geral'];
 
-  List<Map<String, dynamic>> _allServices = [
-    {
-      "title": "Consulta Médica - Clínica Geral",
-      "type": "Consultas",
-      "locations": [
-        "Hospital Municipal: Segunda a Sexta: 8h às 17h",
-        "UBS Centro: Segunda a Sexta: 7h às 16h",
-        "UPA 24h: 24 horas"
-      ],
-    },
-    {
-      "title": "Consulta Médica - Pediatria",
-      "type": "Consultas",
-      "locations": [
-        "Hospital Municipal: Segunda a Sexta: 8h às 17h",
-        "UBS Centro: Segunda, Quarta e Sexta: 8h às 12h"
-      ],
-    },
-    {
-      "title": "Exame de Sangue",
-      "type": "Exames",
-      "locations": [
-        "Hospital Municipal: Segunda a Sexta: 7h às 10h"
-      ],
-    },
-  ];
+  // Instanciamos o ServicesController diretamente aqui
+  late final ServicesController _servicesController;
 
-  List<Map<String, dynamic>> _filteredServices = [];
+  List<ServicesModel> _allServices = [];
+  List<ServicesModel> _filteredServices = [];
+
+  bool _isLoading = false;
+  String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
-    _filteredServices = List.from(_allServices);
+    // Instancia o ServicesController com o ServicesService
+    _servicesController = ServicesController();
+    _servicesController.addListener(_onControllerChange);
+    _loadServices(); 
     _serviceController.addListener(_applyFilters);
+  }
+
+  // Função para lidar com as mudanças no ServicesController
+  void _onControllerChange() {
+    setState(() {
+      _isLoading = _servicesController.isLoading;
+      _allServices = _servicesController.servicesList;
+
+      _applyFilters();
+    });
+  }
+
+  Future<void> _loadServices() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      await _servicesController.loadServices();
+
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _errorMessage = "Falha ao carregar serviços: ${e.toString()}";
+        _isLoading = false;
+        _allServices = [];
+        _filteredServices = [];
+      });
+    }
   }
 
   void _applyFilters() {
@@ -55,8 +70,15 @@ class _ServicesPageState extends State<ServicesPage> {
 
     setState(() {
       _filteredServices = _allServices.where((service) {
-        final matchesName = service['title'].toLowerCase().contains(searchText);
-        final matchesType = selectedType == 'Todos' || service['type'] == selectedType;
+        final matchesName = service.nome.toLowerCase().contains(searchText);
+        bool matchesType = selectedType == 'Todos';
+        if (selectedType == 'Consultas' && service.nome.toLowerCase().contains('consulta')) {
+          matchesType = true;
+        } else if (selectedType == 'Exames' && service.nome.toLowerCase().contains('exame')) {
+          matchesType = true;
+        } else if (selectedType == service.nome) {
+          matchesType = true;
+        }
         return matchesName && matchesType;
       }).toList();
     });
@@ -65,6 +87,9 @@ class _ServicesPageState extends State<ServicesPage> {
   @override
   void dispose() {
     _serviceController.dispose();
+
+    _servicesController.removeListener(_onControllerChange);
+    _servicesController.dispose(); 
     super.dispose();
   }
 
@@ -81,7 +106,6 @@ class _ServicesPageState extends State<ServicesPage> {
         children: [
           Row(
             children: [
-              // const Icon(Icons.search, color: Colors.blue, size: 20),
               const SizedBox(width: 8),
               const Expanded(
                 child: Column(
@@ -194,19 +218,7 @@ class _ServicesPageState extends State<ServicesPage> {
             _buildServiceSearchContainer(),
             const SizedBox(height: 24),
             Expanded(
-              child: _filteredServices.isEmpty
-                  ? const Center(child: Text("Nenhum serviço encontrado."))
-                  : ListView.builder(
-                      itemCount: _filteredServices.length,
-                      itemBuilder: (context, index) {
-                        final service = _filteredServices[index];
-                        return ServiceCard(
-                          title: service['title'],
-                          type: service['type'],
-                          locations: List<String>.from(service['locations']),
-                        );
-                      },
-                    ),
+              child: _buildServiceListContent(), 
             ),
           ],
         ),
@@ -214,22 +226,60 @@ class _ServicesPageState extends State<ServicesPage> {
       bottomNavigationBar: const BottomNavBar(selectedIndex: 0),
     );
   }
+
+  Widget _buildServiceListContent() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_errorMessage != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            _errorMessage!,
+            style: const TextStyle(color: Colors.red, fontSize: 16),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+
+    if (_filteredServices.isEmpty) {
+      return const Center(child: Text("Nenhum serviço encontrado."));
+    }
+
+    return ListView.builder(
+      itemCount: _filteredServices.length,
+      itemBuilder: (context, index) {
+        final service = _filteredServices[index];
+        return ServiceCard(
+          service: service,
+        );
+      },
+    );
+  }
 }
 
 class ServiceCard extends StatelessWidget {
-  final String title;
-  final String type;
-  final List<String> locations;
+  final ServicesModel service;
 
   const ServiceCard({
     super.key,
-    required this.title,
-    required this.type,
-    required this.locations,
+    required this.service,
   });
 
   @override
   Widget build(BuildContext context) {
+    String serviceTypeDisplay;
+    if (service.nome.toLowerCase().contains('consulta')) {
+      serviceTypeDisplay = 'Consultas';
+    } else if (service.nome.toLowerCase().contains('exame')) {
+      serviceTypeDisplay = 'Exames';
+    } else {
+      serviceTypeDisplay = 'Outros';
+    }
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
@@ -238,7 +288,7 @@ class ServiceCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              title,
+              service.nome,
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -247,17 +297,23 @@ class ServiceCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Chip(
-              label: Text(type),
+              label: Text(serviceTypeDisplay),
               backgroundColor: Colors.blue.shade100,
             ),
             const SizedBox(height: 8),
+            Text(
+              service.descricao,
+              style: const TextStyle(fontSize: 14, color: Colors.black87),
+            ),
+            const SizedBox(height: 8),
             const Text("Disponível em:"),
-            for (var location in locations)
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.location_on, size: 20),
-                title: Text(location),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.location_on, size: 20),
+              title: Text(
+                "${service.nomeUnidade}: ${service.horarioInicio} às ${service.horarioFim}",
               ),
+            ),
           ],
         ),
       ),
