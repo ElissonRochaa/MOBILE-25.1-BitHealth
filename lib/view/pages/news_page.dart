@@ -50,57 +50,39 @@ class _NewsPageState extends State<NewsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 4,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Saúde Correntes"),
-          centerTitle: false,
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.blue.shade800,
-          elevation: 0,
-        ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                "Notícias",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(height: 12),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: DengueAlert(),
-            ),
-            const SizedBox(height: 12),
-            const TabBar(
-              labelColor: Colors.black,
-              unselectedLabelColor: Colors.grey,
-              indicatorColor: Colors.blue,
-              tabs: [
-                Tab(text: "Todas"),
-                Tab(text: "Campanhas"),
-                Tab(text: "Serviços"),
-                Tab(text: "Atualizações"),
-              ],
-            ),
-            Expanded(
-              child: TabBarView(
-                children: [
-                  _buildNewsListContent(),
-                  const Center(child: Text("Campanhas")),
-                  const Center(child: Text("Serviços")),
-                  const Center(child: Text("Atualizações")),
-                ],
-              ),
-            ),
-          ],
-        ),
-        bottomNavigationBar: const BottomNavBar(selectedIndex: 0),
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Saúde Correntes"),
+        centerTitle: false,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.blue.shade800,
+        elevation: 0,
       ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
+              "Notícias",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+          ),
+          const SizedBox(height: 12),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            child: DengueAlert(),
+          ),
+          const SizedBox(height: 12),
+          // A TabBar foi removida daqui.
+          Expanded(
+
+            child: _buildNewsListContent(),
+          ),
+        ],
+      ),
+      bottomNavigationBar: const BottomNavBar(selectedIndex: 0),
     );
   }
 
@@ -140,7 +122,7 @@ class _NewsPageState extends State<NewsPage> {
         return Padding(
           padding: const EdgeInsets.only(bottom: 16.0),
           child: NewsCard(
-            newsItem: newsItem, 
+            newsItem: newsItem,
           ),
         );
       },
@@ -191,7 +173,7 @@ class DengueAlert extends StatelessWidget {
 }
 
 class NewsCard extends StatelessWidget {
-  final NewsModel newsItem; 
+  final NewsModel newsItem;
 
   const NewsCard({
     super.key,
@@ -221,8 +203,8 @@ class NewsCard extends StatelessWidget {
             Text(
               newsItem.conteudo,
               style: const TextStyle(color: Colors.black87, fontSize: 14),
-              maxLines: 3, 
-              overflow: TextOverflow.ellipsis, 
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 8),
             Row(
@@ -245,7 +227,7 @@ class NewsCard extends StatelessWidget {
                   onPressed: () {
                     final String shareText =
                         '${newsItem.titulo}\n\n${newsItem.conteudo.substring(0, newsItem.conteudo.length > 150 ? 150 : newsItem.conteudo.length)}...';
-                    
+
                     Share.share(shareText);
                   },
                 ),
@@ -268,7 +250,8 @@ class NewsDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(newsItem.titulo, style: TextStyle(color: Colors.blue.shade800, fontSize: 18)),
+        title: Text(newsItem.titulo,
+            style: TextStyle(color: Colors.blue.shade800, fontSize: 18)),
         backgroundColor: Colors.white,
         iconTheme: IconThemeData(color: Colors.blue.shade800),
         elevation: 1,
@@ -293,7 +276,8 @@ class NewsDetailPage extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               newsItem.conteudo,
-              style: const TextStyle(fontSize: 16, height: 1.5, color: Colors.black87),
+              style: const TextStyle(
+                  fontSize: 16, height: 1.5, color: Colors.black87),
             ),
           ],
         ),
