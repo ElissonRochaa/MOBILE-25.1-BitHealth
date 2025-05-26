@@ -1,6 +1,7 @@
 import 'package:bithealth_front_end/controller/vaccination_controller.dart';
 import 'package:bithealth_front_end/view/components/bottom_nav_bar.dart'; // Certifique-se que o caminho está correto
 import 'package:flutter/material.dart';
+import '../components/app_bar.dart';
 
 void main() {
   runApp(const VaccinationApp());
@@ -81,14 +82,7 @@ class _VaccinationPageState extends State<VaccinationPage> {
     print('DEBUG: vaccinationList size in build: ${_vaccinationController.vaccinationList.length}');
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Saúde Correntes",
-          style: TextStyle(color: Colors.blue, fontSize: 22, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: false,
-        elevation: 0,
-      ),
+      appBar: const CustomAppBar(title: "Saúde Correntes"),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(

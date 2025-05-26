@@ -7,6 +7,7 @@ import 'package:bithealth_front_end/services/dtos/login_dto.dart';
 import 'package:bithealth_front_end/services/user_service.dart';
 import 'package:flutter/material.dart';
 import '../components/bottom_nav_bar.dart';
+import '../components/app_bar.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -91,23 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Row(
-          children: [
-            const SizedBox(width: 10),
-            Text(
-              'Saúde Correntes',
-              style: TextStyle(
-                color: const Color(0xFF3366CC),
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
-            ),
-          ],
-        ),
-      ),
+      appBar: const CustomAppBar(title: "Saúde Correntes"),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

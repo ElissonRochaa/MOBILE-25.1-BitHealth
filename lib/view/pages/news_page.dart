@@ -3,6 +3,7 @@ import 'package:bithealth_front_end/services/news_service.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import '../components/bottom_nav_bar.dart';
+import '../components/app_bar.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({super.key});
@@ -52,13 +53,7 @@ class _NewsPageState extends State<NewsPage> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Saúde Correntes"),
-        centerTitle: false,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.blue.shade800,
-        elevation: 0,
-      ),
+      appBar: const CustomAppBar(title: "Saúde Correntes"),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

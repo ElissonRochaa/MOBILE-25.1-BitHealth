@@ -1,5 +1,6 @@
 import 'package:bithealth_front_end/view/components/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
+import '../components/app_bar.dart';
 
 class EscalaPlantaoScreen extends StatefulWidget {
   const EscalaPlantaoScreen({super.key});
@@ -52,20 +53,7 @@ class _EscalaPlantaoScreenState extends State<EscalaPlantaoScreen> {
     final medicosExibidos = _isDiurno ? _medicosDiurno : _medicosNoturno;
 
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            if (Navigator.canPop(context)) {
-              Navigator.pop(context);
-            } else {
-              Navigator.pushReplacementNamed(context, '/home');
-            }
-          },
-        ),
-        title: const Text('Saúde Correntes'),
-      ),
+      appBar: const CustomAppBar(title: "Saúde Correntes"),
       body: Column(
         children: <Widget>[
           _buildDateChipSelector(),

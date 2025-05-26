@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:bithealth_front_end/services/medicamento_service.dart';
 import 'package:bithealth_front_end/model/medicamentos_model.dart';
 import 'package:bithealth_front_end/view/components/SearchFilterWidget.dart';
+import '../components/app_bar.dart';
 
 class MedicamentosPage extends StatefulWidget {
   const MedicamentosPage({super.key});
@@ -74,13 +75,7 @@ class _MedicamentosPageState extends State<MedicamentosPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Medicamentos"),
-        centerTitle: false,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.blue.shade800,
-        elevation: 0,
-      ),
+      appBar: const CustomAppBar(title: "Medicamentos"),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(

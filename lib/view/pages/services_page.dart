@@ -2,6 +2,7 @@ import 'package:bithealth_front_end/controller/services_controller.dart';
 import 'package:bithealth_front_end/model/services_model.dart';
 import 'package:flutter/material.dart';
 import '../components/bottom_nav_bar.dart';
+import '../components/app_bar.dart';
 
 class ServicesPage extends StatefulWidget {
   const ServicesPage({super.key});
@@ -15,7 +16,6 @@ class _ServicesPageState extends State<ServicesPage> {
   String? _serviceType = 'Todos';
   List<String> serviceTypes = ['Todos', 'Exames Laboratoriais', 'Consulta Clínica Geral'];
 
-  // Instanciamos o ServicesController diretamente aqui
   late final ServicesController _servicesController;
 
   List<ServicesModel> _allServices = [];
@@ -27,14 +27,12 @@ class _ServicesPageState extends State<ServicesPage> {
   @override
   void initState() {
     super.initState();
-    // Instancia o ServicesController com o ServicesService
     _servicesController = ServicesController();
     _servicesController.addListener(_onControllerChange);
     _loadServices(); 
     _serviceController.addListener(_applyFilters);
   }
 
-  // Função para lidar com as mudanças no ServicesController
   void _onControllerChange() {
     setState(() {
       _isLoading = _servicesController.isLoading;
@@ -198,18 +196,7 @@ class _ServicesPageState extends State<ServicesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Serviços",
-        style: TextStyle(
-        fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: false,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.blue.shade800,
-        elevation: 0,
-      ),
+      appBar: const CustomAppBar(title: "Serviços"),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(

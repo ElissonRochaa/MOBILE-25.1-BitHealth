@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../components/bottom_nav_bar.dart';
 import '../../services/dtos/user_dto.dart';
 import '../../services/user_service.dart';
+import '../components/app_bar.dart';
 
 class CadastroScreen extends StatefulWidget {
   const CadastroScreen({super.key});
@@ -158,23 +159,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Row(
-          children: [
-            const SizedBox(width: 10),
-            Text(
-              'Saúde Correntes',
-              style: TextStyle(
-                color: const Color(0xFF3366CC),
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
-            ),
-          ],
-        ),
-      ),
+      appBar: const CustomAppBar(title: "Saúde Correntes"),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator(color: Color(0xFF3366CC)))
           : SingleChildScrollView(

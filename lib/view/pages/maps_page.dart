@@ -5,6 +5,7 @@ import 'package:bithealth_front_end/view/components/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import '../components/app_bar.dart';
 
 class MapaPage extends StatefulWidget {
   const MapaPage({super.key});
@@ -20,8 +21,7 @@ class _MapaPageState extends State<MapaPage> {
   String _selectedFilter = 'Todos';
   final TextEditingController _searchController = TextEditingController();
 
-  // Coordenadas de Correntes, Pernambuco
-  LatLng _mapCenter = LatLng(-8.2735, -36.4933); // Posição inicial em Correntes
+  LatLng _mapCenter = LatLng(-8.2735, -36.4933); 
   double _mapZoom = 14.0;
 
   @override
@@ -49,11 +49,10 @@ class _MapaPageState extends State<MapaPage> {
     }).toList();
   }
 
-  // Método para atualizar o centro do mapa ao selecionar uma unidade
   void _updateMapCenter(LatLng newCenter) {
     setState(() {
       _mapCenter = newCenter;
-      _mapZoom = 15.0; // Ajuste do zoom para melhor visualização
+      _mapZoom = 15.0; 
     });
   }
 
@@ -75,12 +74,7 @@ class _MapaPageState extends State<MapaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Mapa de Correntes"),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.blue.shade800,
-        elevation: 0,
-      ),
+      appBar: const CustomAppBar(title: "Mapa de Correntes"),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

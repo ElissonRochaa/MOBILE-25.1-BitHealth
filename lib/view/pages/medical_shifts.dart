@@ -1,5 +1,6 @@
 import 'package:bithealth_front_end/view/components/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
+import '../components/app_bar.dart';
 
 class SelecaoPlantaoScreen extends StatefulWidget {
   const SelecaoPlantaoScreen({super.key});
@@ -16,14 +17,7 @@ class _SelecaoPlantaoScreenState extends State<SelecaoPlantaoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {},
-        ),
-        title: const Text('Saúde Correntes'),
-      ),
+      appBar: const CustomAppBar(title: "Saúde Correntes"),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
