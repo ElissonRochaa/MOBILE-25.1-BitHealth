@@ -74,7 +74,7 @@ class UsuarioService {
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'token': token,
-          'novaSenha': novaSenha,
+          'newPassword': novaSenha,
         }),
       );
       
