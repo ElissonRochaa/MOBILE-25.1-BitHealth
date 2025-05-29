@@ -1,4 +1,5 @@
 import 'package:bithealth_front_end/view/pages/doctor_page.dart';
+import 'package:bithealth_front_end/view/pages/forgot_password.dart';
 import 'package:bithealth_front_end/view/pages/medical_shifts.dart';
 import 'package:bithealth_front_end/view/pages/register_page.dart';
 import 'package:bithealth_front_end/view/pages/login_page.dart';
@@ -42,6 +43,7 @@ class SaudeCorrentesApp extends StatelessWidget {
         '/mapa': (context) => const MapaPage(),
         '/plantoes':(context) => const SelecaoPlantaoScreen(),
         "/escala_plantao":(context) => const EscalaPlantaoScreen(),
+        "/forgot-password": (context) => const ForgotPasswordScreen(),
       },
     );
   }
