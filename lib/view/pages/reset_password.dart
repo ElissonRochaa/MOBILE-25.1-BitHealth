@@ -12,28 +12,18 @@ class ResetPasswordScreen extends StatefulWidget {
 }
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+  final TextEditingController _tokenController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   
   bool _isLoading = false;
   bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
   int _selectedIndex = 0;
-  String? _token;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Pega o token dos argumentos da rota
-    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    _token = args?['token'];
-  }
 
   @override
   void dispose() {
+    _tokenController.dispose();
     _passwordController.dispose();
-    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -49,22 +39,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       return;
     }
 
-    if (_token == null || _token!.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Token inválido. Solicite um novo link de recuperação.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
     setState(() {
       _isLoading = true;
     });
 
     try {
-      final success = await UsuarioService.redefinirSenha(_token!, _passwordController.text.trim());
+      final success = await UsuarioService.redefinirSenha(_tokenController.text, _passwordController.text);
 
       setState(() {
         _isLoading = false;
@@ -79,7 +59,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        // Aguarda um pouco para mostrar o sucesso e depois navega
         await Future.delayed(const Duration(seconds: 2));
         if (mounted) {
           _navegarParaLogin();
@@ -106,26 +85,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         ),
       );
     }
-  }
-
-  String? _validarSenha(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Por favor, insira uma senha';
-    }
-    if (value.length < 6) {
-      return 'A senha deve ter pelo menos 6 caracteres';
-    }
-    return null;
-  }
-
-  String? _validarConfirmacaoSenha(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Por favor, confirme sua senha';
-    }
-    if (value != _passwordController.text) {
-      return 'As senhas não coincidem';
-    }
-    return null;
   }
 
   @override
@@ -164,7 +123,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       ),
                       SizedBox(height: 4),
                       Text(
-                        'Digite sua nova senha',
+                        'Digite seu token de recuperação e nova senha',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 14,
@@ -175,6 +134,29 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   ),
                 ),
                 const SizedBox(height: 32),
+
+                const Text(
+                  'Token de Recuperação',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+                const SizedBox(height: 8),
+                
+                TextFormField(
+                  controller: _tokenController,
+                  decoration: InputDecoration(
+                    hintText: 'Digite o token de recuperação',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    prefixIcon: const Icon(Icons.vpn_key_outlined, color: Color(0xFF3366CC)),
+                  ),
+                  enabled: !_isLoading,
+                ),
+                const SizedBox(height: 16),
 
                 const Text(
                   'Nova Senha',
@@ -207,43 +189,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     ),
                   ),
                   obscureText: _obscurePassword,
-                  validator: _validarSenha,
-                  enabled: !_isLoading,
-                ),
-                const SizedBox(height: 16),
-
-                const Text(
-                  'Confirmar Nova Senha',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                ),
-                const SizedBox(height: 8),
-                
-                TextFormField(
-                  controller: _confirmPasswordController,
-                  decoration: InputDecoration(
-                    hintText: 'Confirme sua nova senha',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF3366CC)),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
-                        color: const Color(0xFF3366CC),
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscureConfirmPassword = !_obscureConfirmPassword;
-                        });
-                      },
-                    ),
-                  ),
-                  obscureText: _obscureConfirmPassword,
-                  validator: _validarConfirmacaoSenha,
                   enabled: !_isLoading,
                 ),
                 const SizedBox(height: 24),
@@ -311,8 +256,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       ),
                       SizedBox(width: 12),
                       Expanded(
-                        child: Text(
-                          'Sua nova senha deve ter pelo menos 6 caracteres. Após redefinir, você será redirecionado para fazer login.',
+                        child:                         Text(
+                          'Digite o token de recuperação que você recebeu por email e sua nova senha (mínimo 6 caracteres).',
                           style: TextStyle(
                             color: Color(0xFF3366CC),
                             fontSize: 13,
