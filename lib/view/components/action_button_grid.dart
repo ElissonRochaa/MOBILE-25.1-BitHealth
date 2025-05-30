@@ -14,7 +14,7 @@ class ActionButtonGrid extends StatelessWidget {
         );
       }),
       _ButtonData("Plantões", Icons.access_time, () {
-          Navigator.pushNamedAndRemoveUntil(
+        Navigator.pushNamedAndRemoveUntil(
           context,
           '/plantoes',
           (Route<dynamic> route) => false,
@@ -61,14 +61,24 @@ class ActionButtonGrid extends StatelessWidget {
           '/mapa',
           (Route<dynamic> route) => false,
         );
-      }),];
+      }),
+    ];
 
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+        ),
         borderRadius: BorderRadius.circular(12),
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).shadowColor.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: GridView.count(
         physics: const NeverScrollableScrollPhysics(),
@@ -98,20 +108,181 @@ class _GridButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton.icon(
-      onPressed: data.onPressed,
-      icon: Icon(data.icon, color: Colors.blue),
-      label: Text(
-        data.label,
-        style: const TextStyle(color: Colors.blue),
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: data.onPressed,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: isDarkMode 
+                ? Theme.of(context).colorScheme.surface.withOpacity(0.5)
+                : Colors.white.withOpacity(0.8),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+              width: 1,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Row(
+              children: [
+                Icon(
+                  data.icon,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    data.label,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.blue,
-        elevation: 0,
-        side: const BorderSide(color: Colors.transparent),
-        alignment: Alignment.centerLeft,
-      ),
+    );
+  }
+}
+
+class _GridButtonModern extends StatefulWidget {
+  final _ButtonData data;
+
+  const _GridButtonModern({required this.data});
+
+  @override
+  State<_GridButtonModern> createState() => _GridButtonModernState();
+}
+
+class _GridButtonModernState extends State<_GridButtonModern>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+  bool _isPressed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 100),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.95,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return AnimatedBuilder(
+      animation: _scaleAnimation,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _scaleAnimation.value,
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: widget.data.onPressed,
+              onTapDown: (_) {
+                setState(() => _isPressed = true);
+                _animationController.forward();
+              },
+              onTapUp: (_) {
+                setState(() => _isPressed = false);
+                _animationController.reverse();
+              },
+              onTapCancel: () {
+                setState(() => _isPressed = false);
+                _animationController.reverse();
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: _isPressed
+                      ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+                      : isDarkMode
+                          ? Theme.of(context).colorScheme.surface
+                          : Colors.white,
+                  border: Border.all(
+                    color: _isPressed
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                    width: _isPressed ? 2 : 1,
+                  ),
+                  boxShadow: _isPressed
+                      ? []
+                      : [
+                          BoxShadow(
+                            color: Theme.of(context).shadowColor.withOpacity(0.1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  child: Row(
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        child: Icon(
+                          widget.data.icon,
+                          color: _isPressed
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                          size: 22,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: AnimatedDefaultTextStyle(
+                          duration: const Duration(milliseconds: 200),
+                          style: TextStyle(
+                            color: _isPressed
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.onSurface,
+                            fontSize: 14,
+                            fontWeight: _isPressed ? FontWeight.w600 : FontWeight.w500,
+                          ),
+                          child: Text(
+                            widget.data.label,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
