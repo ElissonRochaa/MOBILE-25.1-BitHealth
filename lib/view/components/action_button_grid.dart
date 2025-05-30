@@ -13,7 +13,13 @@ class ActionButtonGrid extends StatelessWidget {
           (Route<dynamic> route) => false,
         );
       }),
-      _ButtonData("Plantões", Icons.access_time, () {}),
+      _ButtonData("Plantões", Icons.access_time, () {
+          Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/plantoes',
+          (Route<dynamic> route) => false,
+        );
+      }),
       _ButtonData("Medicamentos", Icons.medication, () {
         Navigator.pushNamedAndRemoveUntil(
           context,

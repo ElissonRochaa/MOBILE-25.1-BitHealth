@@ -49,4 +49,42 @@ class UsuarioService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
   }
+  static Future<bool> recuperarSenha(String email) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/reset/forgot-password'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'email': email}),
+      );
+      
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static Future<bool> redefinirSenha(String token, String novaSenha) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/reset/reset-password'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'token': token,
+          'newPassword': novaSenha,
+        }),
+      );
+      
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
 }
