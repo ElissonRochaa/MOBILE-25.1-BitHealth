@@ -33,7 +33,7 @@ dependencies:
   intl: 0.17.0  
   mask_text_input_formatter: ^2.4.0  
   http: ^0.13.4
-  shared_preferences: ^2.0.7
+  shared_preferences: ^2.5.3
   flutter_map: 4.0.0  # Verifique a versão mais recente no pub.dev
   latlong2: ^0.8.1  # Para coordenadas geográficas
   provider: ^6.1.1
