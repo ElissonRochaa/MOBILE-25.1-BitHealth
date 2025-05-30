@@ -12,21 +12,31 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     super.key,
     required this.title,
     this.centerTitle = false,
-    this.backgroundColor = Colors.white,
-    this.foregroundColor, 
+    this.backgroundColor,
+    this.foregroundColor,
     this.elevation = 0,
     this.actions,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return AppBar(
-      title: Text(title),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: foregroundColor ?? theme.appBarTheme.foregroundColor,
+        ),
+      ),
       centerTitle: centerTitle,
-      backgroundColor: backgroundColor,
-      foregroundColor: foregroundColor ?? Colors.blue.shade800,
+      backgroundColor: backgroundColor ?? theme.appBarTheme.backgroundColor,
+      foregroundColor: foregroundColor ?? theme.appBarTheme.foregroundColor,
       elevation: elevation,
       actions: actions,
+      iconTheme: IconThemeData(
+        color: foregroundColor ?? theme.appBarTheme.foregroundColor,
+      ),
     );
   }
 
