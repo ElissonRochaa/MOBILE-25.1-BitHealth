@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../components/bottom_nav_bar.dart';
 import '../components/app_bar.dart';
+import '../components/SearchFilterWidget.dart'; 
 
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});
@@ -11,7 +12,7 @@ class NotificationsPage extends StatefulWidget {
 
 class _NotificationsPageState extends State<NotificationsPage> {
   final TextEditingController _notificationController = TextEditingController();
-  String? _notificationCategory = 'Todas';
+  String _notificationCategory = 'Todas';
   List<String> notificationCategories = ['Todas', 'Consulta', 'Vacina', 'Geral'];
 
   List<Map<String, dynamic>> _allNotifications = [
@@ -52,7 +53,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
   void _applyFilters() {
     String searchText = _notificationController.text.toLowerCase();
-    String selectedCategory = _notificationCategory ?? 'Todas';
+    String selectedCategory = _notificationCategory;
 
     setState(() {
       _filteredNotifications = _allNotifications.where((notification) {
@@ -63,112 +64,21 @@ class _NotificationsPageState extends State<NotificationsPage> {
     });
   }
 
+  void _onSearchChanged(String value) {
+    _applyFilters();
+  }
+
+  void _onOptionSelected(String option) {
+    setState(() {
+      _notificationCategory = option;
+      _applyFilters();
+    });
+  }
+
   @override
   void dispose() {
     _notificationController.dispose();
     super.dispose();
-  }
-
-  Widget _buildNotificationSearchContainer() {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.grey.shade300, spreadRadius: 1, blurRadius: 5)],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const SizedBox(width: 8),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Buscar Notificações",
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
-                    ),
-                    Text(
-                      "Por título ou categoria",
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Container(
-            height: 40,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: TextField(
-              controller: _notificationController,
-              style: const TextStyle(fontSize: 14),
-              textAlign: TextAlign.start,
-              decoration: InputDecoration(
-                hintText: 'Título da notificação...',
-                hintStyle: const TextStyle(fontSize: 14),
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                prefixIconConstraints: const BoxConstraints(minWidth: 30, maxWidth: 30),
-                prefixIcon: const Icon(Icons.search, color: Colors.blue, size: 20),
-                suffixIcon: _notificationController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear, color: Colors.grey, size: 18),
-                        onPressed: () {
-                          setState(() {
-                            _notificationController.clear();
-                            _applyFilters();
-                          });
-                        },
-                      )
-                    : null,
-              ),
-              onChanged: (value) {
-                _applyFilters();
-              },
-            ),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            height: 40,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: DropdownButton<String>(
-              value: _notificationCategory,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _notificationCategory = newValue!;
-                  _applyFilters();
-                });
-              },
-              underline: const SizedBox(),
-              icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-              isExpanded: true,
-              items: notificationCategories.map((category) {
-                return DropdownMenuItem(
-                  value: category,
-                  child: Text(
-                    category,
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
@@ -180,7 +90,16 @@ class _NotificationsPageState extends State<NotificationsPage> {
         child: Column(
           children: [
             const SizedBox(height: 16),
-            _buildNotificationSearchContainer(),
+            SearchFilterWidget(
+              title: "Buscar Notificações",
+              subtitle: "Por título ou categoria",
+              searchHint: "Título da notificação...",
+              options: notificationCategories,
+              selectedOption: _notificationCategory,
+              searchController: _notificationController,
+              onSearchChanged: _onSearchChanged,
+              onOptionSelected: _onOptionSelected,
+            ),
             const SizedBox(height: 24),
             Expanded(
               child: _filteredNotifications.isEmpty
