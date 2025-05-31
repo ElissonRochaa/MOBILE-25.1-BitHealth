@@ -3,6 +3,7 @@ import 'package:bithealth_front_end/model/services_model.dart';
 import 'package:flutter/material.dart';
 import '../components/bottom_nav_bar.dart';
 import '../components/app_bar.dart';
+import '../components/SearchFilterWidget.dart';
 
 class ServicesPage extends StatefulWidget {
   const ServicesPage({super.key});
@@ -13,7 +14,7 @@ class ServicesPage extends StatefulWidget {
 
 class _ServicesPageState extends State<ServicesPage> {
   final TextEditingController _serviceController = TextEditingController();
-  String? _serviceType = 'Todos';
+  String _serviceType = 'Todos';
   List<String> serviceTypes = ['Todos', 'Exames Laboratoriais', 'Consulta Clínica Geral'];
 
   late final ServicesController _servicesController;
@@ -64,7 +65,7 @@ class _ServicesPageState extends State<ServicesPage> {
 
   void _applyFilters() {
     String searchText = _serviceController.text.toLowerCase();
-    String selectedType = _serviceType ?? 'Todos';
+    String selectedType = _serviceType;
 
     setState(() {
       _filteredServices = _allServices.where((service) {
@@ -82,115 +83,23 @@ class _ServicesPageState extends State<ServicesPage> {
     });
   }
 
+  void _onSearchChanged(String value) {
+    _applyFilters();
+  }
+
+  void _onOptionSelected(String option) {
+    setState(() {
+      _serviceType = option;
+      _applyFilters();
+    });
+  }
+
   @override
   void dispose() {
     _serviceController.dispose();
-
     _servicesController.removeListener(_onControllerChange);
     _servicesController.dispose(); 
     super.dispose();
-  }
-
-  Widget _buildServiceSearchContainer() {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.grey.shade300, spreadRadius: 1, blurRadius: 5)],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const SizedBox(width: 8),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Buscar Serviços",
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
-                    ),
-                    Text(
-                      "Por nome ou tipo",
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Container(
-            height: 40,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: TextField(
-              controller: _serviceController,
-              style: const TextStyle(fontSize: 14),
-              textAlign: TextAlign.start,
-              decoration: InputDecoration(
-                hintText: 'Nome do serviço...',
-                hintStyle: const TextStyle(fontSize: 14),
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding: const EdgeInsets.symmetric(vertical: 10,horizontal: 8),
-                prefixIconConstraints: const BoxConstraints(minWidth: 30, maxWidth: 30),
-                prefixIcon: const Icon(Icons.search, color: Colors.blue, size: 20),
-                suffixIcon: _serviceController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear, color: Colors.grey, size: 18),
-                        onPressed: () {
-                          setState(() {
-                            _serviceController.clear();
-                            _applyFilters();
-                          });
-                        },
-                      )
-                    : null,
-              ),
-              onChanged: (value) {
-                _applyFilters();
-              },
-            ),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            height: 40,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: DropdownButton<String>(
-              value: _serviceType,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _serviceType = newValue!;
-                  _applyFilters();
-                });
-              },
-              underline: const SizedBox(),
-              icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-              isExpanded: true,
-              items: serviceTypes.map((type) {
-                return DropdownMenuItem(
-                  value: type,
-                  child: Text(
-                    type,
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
@@ -202,7 +111,16 @@ class _ServicesPageState extends State<ServicesPage> {
         child: Column(
           children: [
             const SizedBox(height: 16),
-            _buildServiceSearchContainer(),
+            SearchFilterWidget(
+              title: "Buscar Serviços",
+              subtitle: "Por nome ou tipo",
+              searchHint: "Nome do serviço...",
+              options: serviceTypes,
+              selectedOption: _serviceType,
+              searchController: _serviceController,
+              onSearchChanged: _onSearchChanged,
+              onOptionSelected: _onOptionSelected,
+            ),
             const SizedBox(height: 24),
             Expanded(
               child: _buildServiceListContent(), 
