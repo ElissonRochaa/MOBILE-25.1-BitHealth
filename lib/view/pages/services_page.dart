@@ -176,6 +176,8 @@ class ServiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     String serviceTypeDisplay;
     if (service.nome.toLowerCase().contains('consulta')) {
       serviceTypeDisplay = 'Consultas';
@@ -185,8 +187,22 @@ class ServiceCard extends StatelessWidget {
       serviceTypeDisplay = 'Outros';
     }
 
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: colorScheme.outline.withOpacity(0.2),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).shadowColor.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -194,30 +210,46 @@ class ServiceCard extends StatelessWidget {
           children: [
             Text(
               service.nome,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.blue,
+                color: colorScheme.primary,
               ),
             ),
             const SizedBox(height: 8),
             Chip(
-              label: Text(serviceTypeDisplay),
-              backgroundColor: Colors.blue.shade100,
+              label: Text(
+                serviceTypeDisplay,
+                style: TextStyle(
+                  color: colorScheme.primary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              backgroundColor: colorScheme.primary.withOpacity(0.1),
             ),
             const SizedBox(height: 8),
             Text(
               service.descricao,
-              style: const TextStyle(fontSize: 14, color: Colors.black87),
-            ),
-            const SizedBox(height: 8),
-            const Text("Disponível em:"),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.location_on, size: 20),
-              title: Text(
-                "${service.nomeUnidade}: ${service.horarioInicio} às ${service.horarioFim}",
+              style: TextStyle(
+                fontSize: 14,
+                color: colorScheme.onSurface.withOpacity(0.9),
               ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Icon(Icons.location_on, size: 20, color: colorScheme.primary),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    "${service.nomeUnidade}: ${service.horarioInicio} às ${service.horarioFim}",
+                    style: TextStyle(
+                      color: colorScheme.onSurface.withOpacity(0.8),
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
