@@ -41,7 +41,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
     } else if (index == 4) {
       Navigator.pushNamedAndRemoveUntil(
         context,
-        '/notificacoes',
+        '/servicos',
         (Route<dynamic> route) => false,
       );
     }
@@ -60,7 +60,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
         BottomNavigationBarItem(icon: Icon(Icons.map), label: "Mapa"),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: "Médicos"),
         BottomNavigationBarItem(icon: Icon(Icons.medication), label: "Medicamentos"),
-        BottomNavigationBarItem(icon: Icon(Icons.notifications), label: "Notificações"),
+        BottomNavigationBarItem(icon: Icon(Icons.list), label: "Servicos"),
       ],
       onTap: _onItemTapped,
     );
