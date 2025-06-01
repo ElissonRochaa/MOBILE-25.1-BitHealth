@@ -23,19 +23,29 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     final theme = Theme.of(context);
 
     return AppBar(
-      title: Text(
-        title,
-        style: TextStyle(
-          color: foregroundColor ?? theme.appBarTheme.foregroundColor,
-        ),
-      ),
-      centerTitle: centerTitle,
+      automaticallyImplyLeading: false,
       backgroundColor: backgroundColor ?? theme.appBarTheme.backgroundColor,
       foregroundColor: foregroundColor ?? theme.appBarTheme.foregroundColor,
       elevation: elevation,
       actions: actions,
       iconTheme: IconThemeData(
         color: foregroundColor ?? theme.appBarTheme.foregroundColor,
+      ),
+      centerTitle: centerTitle,
+      title: Row(
+        children: [
+          Image.asset(
+            'images/logo-ico.png',
+            height: 32,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            title,
+            style: TextStyle(
+              color: foregroundColor ?? theme.appBarTheme.foregroundColor,
+            ),
+          ),
+        ],
       ),
     );
   }
