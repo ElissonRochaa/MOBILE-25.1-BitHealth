@@ -177,27 +177,36 @@ class NewsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Card(
       elevation: 2,
-      shadowColor: Colors.grey.shade100,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(newsItem.titulo,
-                style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.blue,
-                    fontWeight: FontWeight.bold)),
+            Text(
+              newsItem.titulo,
+              style: TextStyle(
+                fontSize: 16,
+                color: colorScheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 4),
-            Text(newsItem.dataPublicacao,
-                style: const TextStyle(color: Colors.grey)),
+            Text(
+              newsItem.dataPublicacao,
+              style: TextStyle(color: colorScheme.onSurface.withOpacity(0.6)),
+            ),
             const SizedBox(height: 8),
             Text(
               newsItem.conteudo,
-              style: const TextStyle(color: Colors.black87, fontSize: 14),
+              style: TextStyle(
+                color: colorScheme.onSurface,
+                fontSize: 14,
+              ),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
@@ -215,10 +224,13 @@ class NewsCard extends StatelessWidget {
                       ),
                     );
                   },
-                  child: const Text("Ler mais"),
+                  child: Text(
+                    "Ler mais",
+                    style: TextStyle(color: colorScheme.primary),
+                  ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.share_outlined, color: Colors.blue),
+                  icon: Icon(Icons.share_outlined, color: colorScheme.primary),
                   onPressed: () {
                     final String shareText =
                         '${newsItem.titulo}\n\n${newsItem.conteudo.substring(0, newsItem.conteudo.length > 150 ? 150 : newsItem.conteudo.length)}...';
@@ -235,6 +247,7 @@ class NewsCard extends StatelessWidget {
   }
 }
 
+
 // Nova página para exibir os detalhes da notícia
 class NewsDetailPage extends StatelessWidget {
   final NewsModel newsItem;
@@ -243,12 +256,20 @@ class NewsDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(newsItem.titulo,
-            style: TextStyle(color: Colors.blue.shade800, fontSize: 18)),
-        backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Colors.blue.shade800),
+        title: Text(
+          newsItem.titulo,
+          style: TextStyle(
+            color: colorScheme.onPrimary,
+            fontSize: 18,
+          ),
+        ),
+        backgroundColor: colorScheme.primary,
+        iconTheme: IconThemeData(color: colorScheme.onPrimary),
         elevation: 1,
       ),
       body: SingleChildScrollView(
@@ -258,21 +279,28 @@ class NewsDetailPage extends StatelessWidget {
           children: [
             Text(
               newsItem.titulo,
-              style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87),
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onBackground,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               newsItem.dataPublicacao,
-              style: const TextStyle(color: Colors.grey, fontSize: 14),
+              style: TextStyle(
+                color: colorScheme.onBackground.withOpacity(0.6),
+                fontSize: 14,
+              ),
             ),
             const SizedBox(height: 16),
             Text(
               newsItem.conteudo,
-              style: const TextStyle(
-                  fontSize: 16, height: 1.5, color: Colors.black87),
+              style: TextStyle(
+                fontSize: 16,
+                height: 1.5,
+                color: colorScheme.onBackground,
+              ),
             ),
           ],
         ),
