@@ -8,7 +8,6 @@ class UnidadeSaudeService {
   Future<List<UnidadeSaudeModel>> fetchDoctors() async {
     try {
       Response response = await _apiClient.get('/unidades-saude/');
-      print(response.data);
       return (response.data as List)
           .map((json) => UnidadeSaudeModel.fromJson(json))
           .toList();

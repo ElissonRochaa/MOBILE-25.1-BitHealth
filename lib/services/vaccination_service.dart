@@ -7,7 +7,6 @@ class VaccinationService {
   Future<List<VaccinationModel>> fetchVaccination() async {
     try {
       Response response = await _apiClient.get('/calendario-vacinacao/');
-      print('Response data: ${response.data}');
       return (response.data as List)
           .map((json) => VaccinationModel.fromJson(json))
           .toList();

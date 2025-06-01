@@ -41,7 +41,6 @@ class UsuarioService {
   static Future<void> salvarToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
     // ignore: avoid_print
-    print('Token: $token');
     prefs.setString('token', token);
    }
   
