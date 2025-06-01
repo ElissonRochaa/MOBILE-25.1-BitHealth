@@ -165,19 +165,10 @@ class _SearchFilterWidgetState extends State<SearchFilterWidget>
                   fontSize: 14,
                   color: colorScheme.onSurface.withOpacity(0.5),
                 ),
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                prefixIcon: Container(
-                  padding: const EdgeInsets.all(12),
-                  child: Icon(
-                    Icons.search_rounded,
-                    color: colorScheme.primary.withOpacity(0.7),
-                    size: 20,
-                  ),
+                prefixIcon: Icon(
+                  Icons.search_rounded,
+                  color: colorScheme.primary.withOpacity(0.7),
+                  size: 20,
                 ),
                 suffixIcon: widget.searchController.text.isNotEmpty
                     ? IconButton(
