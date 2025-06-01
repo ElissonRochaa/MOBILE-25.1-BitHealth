@@ -11,13 +11,12 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: "Saúde Correntes"),
+      appBar: const CustomAppBar(title: "BitHealth"),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           children: [
             const SizedBox(height: 16),
-            
             Center(
               child: Consumer<ThemeProvider>(
                 builder: (context, themeProvider, child) {

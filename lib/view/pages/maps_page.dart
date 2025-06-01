@@ -74,7 +74,7 @@ class _MapaPageState extends State<MapaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: "Mapa de Correntes"),
+      appBar: const CustomAppBar(title: "Mapa"),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
