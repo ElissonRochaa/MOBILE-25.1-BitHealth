@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 
 class ApiClient {
-  final Dio _dio = Dio(BaseOptions(baseUrl: 'http://192.168.1.5:8080/api'));
+  final Dio _dio = Dio(BaseOptions(baseUrl: 'http://localhost:8080/api'));
 
   Future<Response> get(String endpoint) async {
     final fullUrl = _dio.options.baseUrl + endpoint;

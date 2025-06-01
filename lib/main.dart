@@ -1,3 +1,4 @@
+import 'package:bithealth_front_end/view/pages/SplashPage.dart';
 import 'package:bithealth_front_end/view/pages/doctor_page.dart';
 import 'package:bithealth_front_end/provider/theme_provider.dart';
 import 'package:bithealth_front_end/view/pages/forgot_password.dart';
@@ -40,12 +41,13 @@ class SaudeCorrentesApp extends StatelessWidget {
           darkTheme: AppThemes.darkTheme,
           themeMode: themeProvider.isDarkMode 
               ? ThemeMode.dark 
-              : ThemeMode.light,
-          home: const HomePage(),
+              : ThemeMode.light,  
+          initialRoute: '/',
           routes: {
+            '/': (context) => const SplashPage(),
             '/home': (context) => const HomePage(),
             '/medicamentos': (context) => const MedicamentosPage(),
-            '/login': (context) => const LoginScreen(),
+            '/log ': (context) => const LoginScreen(),
             '/cadastro': (context) => const CadastroScreen(),
             '/noticias': (context) => const NewsPage(),
             '/servicos': (context) => const ServicesPage(),
