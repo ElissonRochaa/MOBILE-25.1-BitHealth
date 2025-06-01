@@ -99,19 +99,12 @@ class _VaccinationPageState extends State<VaccinationPage> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      appBar: const CustomAppBar(title: "Saúde Correntes"),
+      appBar: const CustomAppBar(title: "Vacinação"),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           children: [
             const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(6),
-              child: const Text(
-                "Vacinação",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue),
-              ),
-            ),
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.symmetric(vertical: 8),
