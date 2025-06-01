@@ -2,43 +2,36 @@
 
 class VaccinationModel {
   final String vacina;
-  final String idadeMinima;
-  final String idadeMaxima;
-  final String descricao;
-  final String dataInicio;
-  final String dataFim;
-  final String status;
+  final String idade;
+  final String doses;
+  final String doencasEvitadas;
+  final String faixaEtaria;
 
   VaccinationModel({
     required this.vacina,
-    required this.idadeMinima,
-    required this.idadeMaxima,
-    required this.descricao,
-    required this.dataInicio,
-    required this.dataFim,
-    required this.status,
+    required this.idade,
+    required this.doses,
+    required this.doencasEvitadas,
+    required this.faixaEtaria,
   });
   factory VaccinationModel.fromJson(Map<String, dynamic> json) {
     return VaccinationModel(
       vacina: json['vacina'],
-      idadeMinima: json['idadeMinima']?.toString() ?? '',
-      idadeMaxima: json['idadeMaxima']?.toString() ?? '',
-      descricao: json['descricao'],
-      dataInicio: json['dataInicio'],
-      dataFim: json['dataFim'],
-      status: json['status'],
+      idade: json['idade'],
+      doses: json['doses'],
+      doencasEvitadas: json['doencasEvitadas'],
+      faixaEtaria: json['faixaEtaria'],
+
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'vacina': vacina,
-      'idadeMinima': idadeMinima,
-      'idadeMaxima': idadeMaxima,
-      'descricao': descricao,
-      'dataInicio': dataInicio,
-      'dataFim': dataFim,
-      'status': status,
+      'idade': idade,
+      'doses': doses,
+      'doencasEvitadas': doencasEvitadas,
+      'faixaEtaria': faixaEtaria,
     };
   }
 }

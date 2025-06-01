@@ -1,4 +1,3 @@
-
 import 'package:bithealth_front_end/model/vaccination_model.dart';
 import 'package:bithealth_front_end/services/vaccination_service.dart';
 import 'package:flutter/foundation.dart';

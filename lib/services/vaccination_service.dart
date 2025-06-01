@@ -6,12 +6,12 @@ class VaccinationService {
   final ApiClient _apiClient = ApiClient();
   Future<List<VaccinationModel>> fetchVaccination() async {
     try {
-      Response response = await _apiClient.get('/calendario-vacinacao/');
+      Response response = await _apiClient.get('/vacinas/');
       return (response.data as List)
           .map((json) => VaccinationModel.fromJson(json))
           .toList();
     } catch (e) {
-      throw Exception('Erro ao buscar campanhas: $e');
+      throw Exception('Erro ao buscar vacinas: $e');
     }
   }
 }

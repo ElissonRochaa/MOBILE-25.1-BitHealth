@@ -1,5 +1,6 @@
+import 'package:bithealth_front_end/controller/campaigns_controller.dart';
 import 'package:bithealth_front_end/controller/vaccination_controller.dart';
-import 'package:bithealth_front_end/view/components/bottom_nav_bar.dart'; // Certifique-se que o caminho está correto
+import 'package:bithealth_front_end/view/components/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 import '../components/app_bar.dart';
 
@@ -27,7 +28,7 @@ class VaccinationPage extends StatefulWidget {
   const VaccinationPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
+  
   _VaccinationPageState createState() => _VaccinationPageState();
 }
 
@@ -35,38 +36,67 @@ class _VaccinationPageState extends State<VaccinationPage> {
   String activeTab = "calendario";
   String activeAgeGroup = "criancas";
 
+  final CampaignsController _campaignsController = CampaignsController();
   final VaccinationController _vaccinationController = VaccinationController();
 
   @override
   void initState() {
     super.initState();
-    _vaccinationController.addListener(_onControllerChange);
-    if (activeTab == "campanhas") {
-      _vaccinationController.loadVaccination();
-    }
+    _campaignsController.addListener(_onCampaignsControllerChange);
+    _vaccinationController.addListener(_onVaccinationControllerChange);
+    
+    _vaccinationController.loadVaccination();
   }
 
   @override
   void dispose() {
-    _vaccinationController.removeListener(_onControllerChange);
+    _campaignsController.removeListener(_onCampaignsControllerChange);
+    _campaignsController.dispose();
+    _vaccinationController.removeListener(_onVaccinationControllerChange);
     _vaccinationController.dispose();
     super.dispose();
   }
 
-  void _onControllerChange() {
+  void _onCampaignsControllerChange() {
     setState(() {
-      print('DEBUG: _onControllerChange chamado. Lista de vacinas (tamanho): ${_vaccinationController.vaccinationList.length}');
-      if (_vaccinationController.vaccinationList.isNotEmpty) {
-        print('DEBUG: Primeira vacina na lista: ${_vaccinationController.vaccinationList.first.vacina}');
+      print('DEBUG: _onCampaignsControllerChange chamado. Lista de vacinas (tamanho): ${_campaignsController.vaccinationList.length}');
+      if (_campaignsController.vaccinationList.isNotEmpty) {
+        print('DEBUG: Primeira vacina na lista: ${_campaignsController.vaccinationList.first.vacina}');
       }
     });
   }
 
+  void _onVaccinationControllerChange() {
+    setState(() {
+      print('DEBUG: _onVaccinationControllerChange chamado. Lista de vacinas do calendário (tamanho): ${_vaccinationController.vaccinationList.length}');
+      if (_vaccinationController.vaccinationList.isNotEmpty) {
+        print('DEBUG: Primeira vacina do calendário: ${_vaccinationController.vaccinationList.first.vacina} - Faixa Etária: ${_vaccinationController.vaccinationList.first.faixaEtaria}');
+      }
+    });
+  }
+
+  List<dynamic> _getVaccinationsByAgeGroup(String ageGroup) {
+    return _vaccinationController.vaccinationList.where((vaccination) {
+      
+      String faixaEtaria = vaccination.faixaEtaria.toLowerCase();
+      
+      switch (ageGroup) {
+        case "criancas":
+          return faixaEtaria.contains("criança") || faixaEtaria.contains("crianca");
+        case "adolescentes":
+          return faixaEtaria.contains("adolescente");
+        case "adultos":
+          return faixaEtaria.contains("adulto");
+        case "gestantes":
+          return faixaEtaria.contains("gestante");
+        default:
+          return false;
+      }
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
-    print('DEBUG: build da VaccinationPage reconstruído. Active Tab: $activeTab');
-    print('DEBUG: isLoading: ${_vaccinationController.isLoading}');
-    print('DEBUG: vaccinationList size in build: ${_vaccinationController.vaccinationList.length}');
 
     return Scaffold(
       appBar: const CustomAppBar(title: "Saúde Correntes"),
@@ -121,79 +151,40 @@ class _VaccinationPageState extends State<VaccinationPage> {
                               _buildAgeGroupButton("Crianças", "criancas"),
                               _buildAgeGroupButton("Adolescentes", "adolescentes"),
                               _buildAgeGroupButton("Adultos", "adultos"),
+                              _buildAgeGroupButton("Gestantes", "gestantes"),
                             ],
                           ),
                           const SizedBox(height: 16),
                           Expanded(
-                            child: SingleChildScrollView(
-                              child: Table(
-                                columnWidths: const {
-                                  0: FixedColumnWidth(100),
-                                  1: FixedColumnWidth(150),
-                                  2: FixedColumnWidth(100),
-                                },
-                                border: TableBorder.all(color: Colors.grey.shade400, width: 1),
-                                children: [
-                                  _buildTableRow("Idade", "Vacina", "Doses", isHeader: true),
-                                  if (activeAgeGroup == "criancas") ...[
-                                    _buildTableRow("Ao nascer", "BCG", "Dose única"),
-                                    _buildTableRow("Ao nascer", "Hepatite B", "1ª dose"),
-                                    _buildTableRow("2 meses", "Pentavalente", "1ª dose"),
-                                    _buildTableRow("2 meses", "Poliomielite", "1ª dose"),
-                                    _buildTableRow("2 meses", "Pneumocócica 10-valente", "1ª dose"),
-                                    _buildTableRow("2 meses", "Rotavírus humano", "1ª dose"),
-                                    _buildTableRow("3 meses", "Meningocócica C", "1ª dose"),
-                                    _buildTableRow("4 meses", "Pentavalente", "2ª dose"),
-                                    _buildTableRow("4 meses", "Poliomielite", "2ª dose"),
-                                    _buildTableRow("4 meses", "Pneumocócica 10-valente", "2ª dose"),
-                                    _buildTableRow("4 meses", "Rotavírus humano", "2ª dose"),
-                                    _buildTableRow("5 meses", "Meningocócica C", "2ª dose"),
-                                    _buildTableRow("6 meses", "Pentavalente", "3ª dose"),
-                                    _buildTableRow("6 meses", "Poliomielite", "3ª dose"),
-                                    _buildTableRow("6 meses", "Covid-19", "1ª dose"),
-                                    _buildTableRow("7 meses", "Covid-19", "2ª dose"),
-                                    _buildTableRow("9 meses", "Febre Amarela", "1 dose"),
-                                    _buildTableRow("12 meses", "Pneumocócica 10-valente", "Reforço"),
-                                    _buildTableRow("12 meses", "Meningocócica C", "Reforço"),
-                                    _buildTableRow("12 meses", "Tríplice viral", "1ª dose"),
-                                    _buildTableRow("15 meses", "DTP", "1º reforço"),
-                                    _buildTableRow("15 meses", "Poliomielite", "Reforço"),
-                                    _buildTableRow("15 meses", "Hepatite A", "1 dose"),
-                                    _buildTableRow("15 meses", "Tetra viral", "1 dose"),
-                                    _buildTableRow("4 anos", "DTP", "2º reforço"),
-                                    _buildTableRow("4 anos", "Febre Amarela", "Reforço"),
-                                    _buildTableRow("4 anos", "Varicela", "1 dose"),
-                                    _buildTableRow("5 anos", "Febre Amarela", "Dose conforme histórico"),
-                                    _buildTableRow("5 anos", "Pneumocócica 23-valente", "2 doses (Pop. Indígena)"),
-                                    _buildTableRow("7 anos", "Difteria e Tétano (dT)", "Conforme sit. vacinal / Reforços"),
-                                    _buildTableRow("9 e 10 anos", "HPV4", "Dose única"),
-                                  ],
-                                  if (activeAgeGroup == "adolescentes") ...[
-                                    _buildTableRow("A qualquer tempo", "Hepatite B", "Iniciar ou completar 3 doses (conforme sit. vacinal)"),
-                                    _buildTableRow("A qualquer tempo", "Difteria e Tétano (dT)", "Iniciar ou completar 3 doses | Reforços"),
-                                    _buildTableRow("A qualquer tempo", "Febre Amarela", "Dose única ou reforço (conforme histórico)"),
-                                    _buildTableRow("A qualquer tempo", "Tríplice viral", "Iniciar ou completar 2 doses (conforme sit. vacinal)"),
-                                    _buildTableRow("11 a 14 anos", "HPV4", "Dose única (resgate 15-19a, vide obs.)"),
-                                    _buildTableRow("11 a 14 anos", "Meningocócica ACWY", "Uma dose"),
-                                  ],
-                                  if (activeAgeGroup == "adultos") ...[
-                                    _buildTableRow("Adultos (qualquer idade)", "Hepatite B", "3 doses (conforme histórico)"),
-                                    _buildTableRow("Adultos (qualquer idade)", "Difteria e Tétano (dT)", "3 doses (conforme histórico) | Reforços"),
-                                    _buildTableRow("Adultos (<60 anos)", "Febre Amarela", "Dose conforme histórico"),
-                                    _buildTableRow("Adultos (>=60 anos)", "Febre Amarela", "Avaliar risco/benefício (se não vacinado/sem comprovante)"),
-                                    _buildTableRow("Adultos (conforme orientação)", "HPV4", "Dose conforme orientação (vide obs.)"),
-                                    _buildTableRow("Adultos (>=18 anos)", "dTpa", "1 dose | Reforços (vide obs. prof. saúde)"),
-                                    _buildTableRow("20 a 29 anos", "Tríplice viral", "2 doses (verificar histórico)"),
-                                    _buildTableRow("30 a 59 anos", "Tríplice viral", "1 dose (verificar histórico)"),
-                                  ],
-                                ],
-                              ),
-                            ),
+                            child: _vaccinationController.isLoading
+                                ? const Center(child: CircularProgressIndicator())
+                                : _vaccinationController.vaccinationList.isEmpty
+                                    ? const Center(child: Text("Nenhuma informação de vacinação encontrada."))
+                                    : SingleChildScrollView(
+                                        child: Table(
+                                          columnWidths: const {
+                                            0: FixedColumnWidth(100),
+                                            1: FixedColumnWidth(150),
+                                            2: FixedColumnWidth(100),
+                                          },
+                                          border: TableBorder.all(color: Colors.grey.shade400, width: 1),
+                                          children: [
+                                            _buildTableRow("Idade", "Vacina", "Doses", isHeader: true),
+                                            ..._getVaccinationsByAgeGroup(activeAgeGroup).map((vaccination) {
+                                              return _buildTableRow(
+                                                vaccination.idade,
+                                                vaccination.vacina,
+                                                vaccination.doses,
+                                              );
+                                            }).toList(),
+                                          ],
+                                        ),
+                                      ),
                           ),
                         ],
                       ),
                     );
-                  } else { // activeTab == "campanhas"
+                  } else {
                     return _buildContainerWithShadow(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,15 +198,15 @@ class _VaccinationPageState extends State<VaccinationPage> {
                             style: TextStyle(fontSize: 16, color: Colors.blue),
                           ),
                           const SizedBox(height: 16),
-                          _vaccinationController.isLoading
+                          _campaignsController.isLoading
                               ? const Center(child: CircularProgressIndicator())
-                              : _vaccinationController.vaccinationList.isEmpty
+                              : _campaignsController.vaccinationList.isEmpty
                                   ? const Center(child: Text("Nenhuma campanha de vacinação encontrada."))
                                   : Expanded(
                                       child: ListView.builder(
-                                        itemCount: _vaccinationController.vaccinationList.length,
+                                        itemCount: _campaignsController.vaccinationList.length,
                                         itemBuilder: (context, index) {
-                                          final campaign = _vaccinationController.vaccinationList[index];
+                                          final campaign = _campaignsController.vaccinationList[index];
                                           return _buildCampaignCard(
                                             campaign.vacina,
                                             "${campaign.dataInicio} a ${campaign.dataFim}",
@@ -245,8 +236,8 @@ class _VaccinationPageState extends State<VaccinationPage> {
         setState(() {
           activeTab = tab;
         });
-        if (tab == "campanhas" && _vaccinationController.vaccinationList.isEmpty) {
-          _vaccinationController.loadVaccination();
+        if (tab == "campanhas" && _campaignsController.vaccinationList.isEmpty) {
+          _campaignsController.loadVaccination();
         }
       },
       style: ButtonStyle(
@@ -258,17 +249,27 @@ class _VaccinationPageState extends State<VaccinationPage> {
   }
 
   Widget _buildAgeGroupButton(String text, String group) {
-    return ElevatedButton(
-      onPressed: () {
-        setState(() {
-          activeAgeGroup = group;
-        });
-      },
-      style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all(activeAgeGroup == group ? Colors.white : Colors.grey.shade100),
-        foregroundColor: WidgetStateProperty.all(activeAgeGroup == group ? Colors.blue.shade800 : Colors.grey.shade500),
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 2.0),
+        child: ElevatedButton(
+          onPressed: () {
+            setState(() {
+              activeAgeGroup = group;
+            });
+          },
+          style: ButtonStyle(
+            backgroundColor: WidgetStateProperty.all(activeAgeGroup == group ? Colors.white : Colors.grey.shade100),
+            foregroundColor: WidgetStateProperty.all(activeAgeGroup == group ? Colors.blue.shade800 : Colors.grey.shade500),
+            padding: WidgetStateProperty.all(const EdgeInsets.symmetric(vertical: 8, horizontal: 4)),
+          ),
+          child: Text(
+            text,
+            style: const TextStyle(fontSize: 12),
+            textAlign: TextAlign.center,
+          ),
+        ),
       ),
-      child: Text(text),
     );
   }
 
