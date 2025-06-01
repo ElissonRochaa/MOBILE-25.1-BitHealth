@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:bithealth_front_end/services/user_service.dart';
 import 'package:flutter/material.dart';
 import '../components/bottom_nav_bar.dart';

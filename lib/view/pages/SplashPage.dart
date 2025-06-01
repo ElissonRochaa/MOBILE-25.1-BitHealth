@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -13,14 +12,15 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
   late final AnimationController _lottieController;
+  late AnimationController _logoOutController;
+  late Animation<double> _logoFadeOutAnimation;
+
 
   bool _showText = false;
-  bool _showLottie = false;
   bool _showLogo = false;
 
   final Duration _initialDelay = const Duration(milliseconds: 450);
   final Duration _textDuration = const Duration(seconds: 2);
-  final Duration _lottieDuration = const Duration(seconds: 2);
   final Duration _logoDuration = const Duration(seconds: 3);
   final Duration _transitionDuration = const Duration(milliseconds: 500);
 
@@ -56,13 +56,6 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     _elementController.reverse();
     setState(() => _showText = false);
 
-    setState(() => _showLottie = true);
-    _elementController.forward();
-    await Future.delayed(_lottieDuration + _transitionDuration);
-    _elementController.reverse();
-    _lottieController.stop();
-    setState(() => _showLottie = false);
-
     setState(() => _showLogo = true);
 
     final logoController = AnimationController(
@@ -83,12 +76,32 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     });
 
     logoController.forward();
-    await Future.delayed(_logoDuration + const Duration(seconds: 2));
+    await Future.delayed(_logoDuration);
+
+    // Logo fade out
+    _logoOutController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+
+    _logoFadeOutAnimation = Tween<double>(begin: 1.0, end: 0.0).animate(
+      CurvedAnimation(parent: _logoOutController, curve: Curves.easeOut),
+    );
+
+    setState(() {
+      _fadeAnimation = _logoFadeOutAnimation;
+    });
+
+    _logoOutController.forward();
+    await Future.delayed(const Duration(milliseconds: 800));
+
     logoController.dispose();
+    _logoOutController.dispose();
 
     if (!mounted) return;
     Navigator.pushReplacementNamed(context, '/home');
   }
+
 
   @override
   void dispose() {
@@ -120,31 +133,20 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
         alignment: Alignment.center,
         width: double.infinity,
         height: double.infinity,
-        color: Colors.white,
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (_showText)
               _buildAnimated(
                 visible: _showText,
-                child: const Text(
+                child: Text(
                   'Bem-vindo',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                ),
-              ),
-            if (_showLottie)
-              _buildAnimated(
-                visible: _showLottie,
-                child: Lottie.asset(
-                  'animations/splash_animation.json',
-                  controller: _lottieController,
-                  width: 200,
-                  height: 200,
-                  onLoaded: (composition) {
-                    _lottieController
-                      ..duration = composition.duration * 1
-                      ..forward(from: 0.0);
-                  },
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onBackground,
+                  ),
                 ),
               ),
             if (_showLogo)
@@ -157,8 +159,8 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
 
                     return Image.asset(
                       'images/logo.png',
-                      width: screenWidth * 1,
-                      height: screenHeight * 1,
+                      width: screenWidth * 0.5,
+                      height: screenHeight * 0.5,
                       fit: BoxFit.contain,
                     );
                   },
