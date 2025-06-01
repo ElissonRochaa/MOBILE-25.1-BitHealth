@@ -141,6 +141,12 @@ class NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    final titleColor = theme.colorScheme.primary;
+
+    final chipBackgroundColor = titleColor.withOpacity(0.2);
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
@@ -150,16 +156,21 @@ class NotificationCard extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.blue,
+                color: titleColor,
               ),
             ),
             const SizedBox(height: 8),
             Chip(
-              label: Text(category),
-              backgroundColor: Colors.blue.shade100,
+              label: Text(
+                category,
+                style: TextStyle(
+                  color: titleColor,
+                ),
+              ),
+              backgroundColor: chipBackgroundColor,
             ),
             const SizedBox(height: 8),
             Text("Data: $date"),
