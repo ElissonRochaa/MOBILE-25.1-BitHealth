@@ -34,15 +34,13 @@ dependencies:
   mask_text_input_formatter: ^2.4.0  
   http: ^0.13.4
   shared_preferences: ^2.5.3
-  flutter_map: 4.0.0  # Verifique a versão mais recente no pub.dev
-  latlong2: ^0.8.1  # Para coordenadas geográficas
+  flutter_map: 4.0.0  
+  latlong2: ^0.8.1  
   provider: ^6.1.1
   dio: ^4.0.0
   share_plus: ^9.0.0
   table_calendar: ^3.0.0
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
