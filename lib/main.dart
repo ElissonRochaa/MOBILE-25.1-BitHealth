@@ -47,7 +47,7 @@ class SaudeCorrentesApp extends StatelessWidget {
             '/': (context) => const SplashPage(),
             '/home': (context) => const HomePage(),
             '/medicamentos': (context) => const MedicamentosPage(),
-            '/log ': (context) => const LoginScreen(),
+            '/login': (context) => const LoginScreen(),
             '/cadastro': (context) => const CadastroScreen(),
             '/noticias': (context) => const NewsPage(),
             '/servicos': (context) => const ServicesPage(),
