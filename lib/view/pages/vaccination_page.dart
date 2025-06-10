@@ -1,5 +1,10 @@
+// ignore_for_file: file_names
+
+import 'package:bithealth_front_end/model/campaigns_model.dart';
+import 'package:bithealth_front_end/view/components/SearchFilterWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'package:bithealth_front_end/controller/campaigns_controller.dart';
 import 'package:bithealth_front_end/controller/vaccination_controller.dart';
 import 'package:bithealth_front_end/view/components/bottom_nav_bar.dart';
@@ -49,29 +54,53 @@ class _VaccinationPageState extends State<VaccinationPage> {
   final CampaignsController _campaignsController = CampaignsController();
   final VaccinationController _vaccinationController = VaccinationController();
 
+  final TextEditingController _searchController = TextEditingController();
+  String _selectedStatus = 'Todos';
+  List<CampaignsModel> _filteredCampaigns = [];
+
   @override
   void initState() {
     super.initState();
-    _campaignsController.addListener(_onCampaignsControllerChange);
+    _campaignsController.addListener(_onCampaignsChange);
     _vaccinationController.addListener(_onVaccinationControllerChange);
+    _searchController.addListener(_filterCampaigns);
     _vaccinationController.loadVaccination();
   }
 
   @override
   void dispose() {
-    _campaignsController.removeListener(_onCampaignsControllerChange);
+    _campaignsController.removeListener(_onCampaignsChange);
     _campaignsController.dispose();
     _vaccinationController.removeListener(_onVaccinationControllerChange);
     _vaccinationController.dispose();
+    _searchController.removeListener(_filterCampaigns);
+    _searchController.dispose();
     super.dispose();
   }
 
-  void _onCampaignsControllerChange() {
-    setState(() {});
+  void _onCampaignsChange() {
+    _filterCampaigns();
   }
 
   void _onVaccinationControllerChange() {
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void _filterCampaigns() {
+    final allCampaigns = _campaignsController.vaccinationList;
+    final searchQuery = _searchController.text.toLowerCase();
+
+    setState(() {
+      _filteredCampaigns = allCampaigns.where((campaign) {
+        final vaccineMatch =
+            campaign.vacina.toLowerCase().contains(searchQuery);
+        final statusMatch = _selectedStatus == 'Todos' ||
+            campaign.status.toLowerCase() == _selectedStatus.toLowerCase();
+        return vaccineMatch && statusMatch;
+      }).toList();
+    });
   }
 
   List<dynamic> _getVaccinationsByAgeGroup(String ageGroup) {
@@ -79,7 +108,8 @@ class _VaccinationPageState extends State<VaccinationPage> {
       final faixaEtaria = vaccination.faixaEtaria.toLowerCase();
       switch (ageGroup) {
         case "criancas":
-          return faixaEtaria.contains("criança") || faixaEtaria.contains("crianca");
+          return faixaEtaria.contains("criança") ||
+              faixaEtaria.contains("crianca");
         case "adolescentes":
           return faixaEtaria.contains("adolescente");
         case "adultos":
@@ -109,7 +139,9 @@ class _VaccinationPageState extends State<VaccinationPage> {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: theme.brightness == Brightness.light ? Colors.grey.shade300 : Colors.black45,
+                    color: theme.brightness == Brightness.light
+                        ? Colors.grey.shade300
+                        : Colors.black45,
                     spreadRadius: 1,
                     blurRadius: 5,
                   )
@@ -125,7 +157,9 @@ class _VaccinationPageState extends State<VaccinationPage> {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: activeTab == "calendario" ? _buildCalendarTab() : _buildCampaignsTab(),
+              child: activeTab == "calendario"
+                  ? _buildCalendarTab()
+                  : _buildCampaignsTab(),
             ),
           ],
         ),
@@ -139,8 +173,12 @@ class _VaccinationPageState extends State<VaccinationPage> {
       child: Column(
         children: [
           const Text("Calendário Nacional de Vacinação",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue)),
-          const Text("Vacinas obrigatórias por faixa etária", style: TextStyle(fontSize: 16, color: Colors.blue)),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue)),
+          const Text("Vacinas obrigatórias por faixa etária",
+              style: TextStyle(fontSize: 16, color: Colors.blue)),
           const SizedBox(height: 16),
           Wrap(
             spacing: 8,
@@ -156,7 +194,8 @@ class _VaccinationPageState extends State<VaccinationPage> {
             child: _vaccinationController.isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _vaccinationController.vaccinationList.isEmpty
-                    ? const Center(child: Text("Nenhuma informação de vacinação encontrada."))
+                    ? const Center(
+                        child: Text("Nenhuma informação de vacinação encontrada."))
                     : SingleChildScrollView(
                         child: Table(
                           columnWidths: const {
@@ -164,9 +203,11 @@ class _VaccinationPageState extends State<VaccinationPage> {
                             1: FixedColumnWidth(150),
                             2: FixedColumnWidth(100),
                           },
-                          border: TableBorder.all(color: Colors.grey.shade400, width: 1),
+                          border: TableBorder.all(
+                              color: Colors.grey.shade400, width: 1),
                           children: [
-                            _buildTableRow("Idade", "Vacina", "Doses", isHeader: true),
+                            _buildTableRow("Idade", "Vacina", "Doses",
+                                isHeader: true),
                             ..._getVaccinationsByAgeGroup(activeAgeGroup).map((v) {
                               return _buildTableRow(v.idade, v.vacina, v.doses);
                             }).toList(),
@@ -180,29 +221,47 @@ class _VaccinationPageState extends State<VaccinationPage> {
   }
 
   Widget _buildCampaignsTab() {
-    return _buildContainerWithShadow(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("Campanhas de Vacinação",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue)),
-          const Text("Campanhas de vacinação em andamento", style: TextStyle(fontSize: 16, color: Colors.blue)),
-          const SizedBox(height: 16),
-          _campaignsController.isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : _campaignsController.vaccinationList.isEmpty
-                  ? const Center(child: Text("Nenhuma campanha de vacinação encontrada."))
-                  : Expanded(
-                      child: ListView.builder(
-                        itemCount: _campaignsController.vaccinationList.length,
-                        itemBuilder: (context, index) {
-                          final c = _campaignsController.vaccinationList[index];
-                          return _buildCampaignCard(c.vacina, "${c.dataInicio} a ${c.dataFim}", c.descricao, c.status);
-                        },
-                      ),
+    final statusOptions = ['Todos', 'ANDAMENTO', 'REALIZADA', 'EMBREVE'];
+
+    return Column(
+      children: [
+        SearchFilterWidget(
+          title: 'Filtrar Campanhas',
+          subtitle: 'Busque por nome da vacina ou status',
+          searchHint: 'Ex: Gripe, COVID-19...',
+          options: statusOptions,
+          selectedOption: _selectedStatus,
+          searchController: _searchController,
+          onSearchChanged: (value) {
+            _filterCampaigns();
+          },
+          onOptionSelected: (option) {
+            setState(() {
+              _selectedStatus = option;
+            });
+            _filterCampaigns();
+          },
+        ),
+        const SizedBox(height: 16),
+        _campaignsController.isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _filteredCampaigns.isEmpty
+                ? const Expanded(
+                    child: Center(
+                      child: Text("Nenhuma campanha encontrada."),
                     ),
-        ],
-      ),
+                  )
+                : Expanded(
+                    child: ListView.builder(
+                      itemCount: _filteredCampaigns.length,
+                      itemBuilder: (context, index) {
+                        final c = _filteredCampaigns[index];
+                        return _buildCampaignCard(c.vacina,
+                            "${c.dataInicio} a ${c.dataFim}", c.descricao, c.status);
+                      },
+                    ),
+                  ),
+      ],
     );
   }
 
@@ -214,13 +273,16 @@ class _VaccinationPageState extends State<VaccinationPage> {
         setState(() {
           activeTab = value;
         });
-        if (value == "campanhas" && _campaignsController.vaccinationList.isEmpty) {
+        if (value == "campanhas" &&
+            _campaignsController.vaccinationList.isEmpty) {
           _campaignsController.loadVaccination();
         }
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: isSelected ? theme.colorScheme.primary : theme.colorScheme.surface,
-        foregroundColor: isSelected ? Colors.white : theme.colorScheme.onSurface,
+        backgroundColor:
+            isSelected ? theme.colorScheme.primary : theme.colorScheme.surface,
+        foregroundColor:
+            isSelected ? Colors.white : theme.colorScheme.onSurface,
       ),
       child: Text(label),
     );
@@ -253,7 +315,9 @@ class _VaccinationPageState extends State<VaccinationPage> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: theme.brightness == Brightness.light ? Colors.grey.shade300 : Colors.black45,
+            color: theme.brightness == Brightness.light
+                ? Colors.grey.shade300
+                : Colors.black45,
             spreadRadius: 1,
             blurRadius: 5,
           ),
@@ -263,10 +327,12 @@ class _VaccinationPageState extends State<VaccinationPage> {
     );
   }
 
-  TableRow _buildTableRow(String age, String vaccine, String doses, {bool isHeader = false}) {
+  TableRow _buildTableRow(String age, String vaccine, String doses,
+      {bool isHeader = false}) {
     final theme = Theme.of(context);
     return TableRow(
-      decoration: isHeader ? BoxDecoration(color: theme.colorScheme.primary) : null,
+      decoration:
+          isHeader ? BoxDecoration(color: theme.colorScheme.primary) : null,
       children: [
         _buildTableCell(age, isHeader),
         _buildTableCell(vaccine, isHeader),
@@ -289,7 +355,8 @@ class _VaccinationPageState extends State<VaccinationPage> {
     );
   }
 
-  Widget _buildCampaignCard(String title, String date, String desc, String status) {
+  Widget _buildCampaignCard(
+      String title, String date, String desc, String status) {
     Color bgColor;
     Color textColor;
 
@@ -317,7 +384,11 @@ class _VaccinationPageState extends State<VaccinationPage> {
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue)),
+          Text(title,
+              style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue)),
           const SizedBox(height: 8),
           Text("Período: $date"),
           const SizedBox(height: 8),
@@ -325,7 +396,8 @@ class _VaccinationPageState extends State<VaccinationPage> {
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(8)),
+            decoration:
+                BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(8)),
             child: Text(status, style: TextStyle(color: textColor)),
           ),
         ]),
