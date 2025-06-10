@@ -174,8 +174,6 @@ class _EscalaPlantaoScreenState extends State<EscalaPlantaoScreen> {
                   _selectedDateChipIndex = index;
                   _dataSelecionadaChip = _datasReaisChips[index];
                 });
-                // Note: Aqui você poderia re-chamar a API se a data fizesse parte da busca
-                // _carregarDadosDaApi(); 
               },
               child: Container(
                 width: 60,
