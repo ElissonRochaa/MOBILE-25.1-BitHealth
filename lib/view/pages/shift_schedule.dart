@@ -1,5 +1,8 @@
+import 'dart:convert';
+import 'package:bithealth_front_end/model/doctor_model.dart';
 import 'package:bithealth_front_end/view/components/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import '../components/app_bar.dart';
 
 class EscalaPlantaoScreen extends StatefulWidget {
@@ -22,18 +25,10 @@ class _EscalaPlantaoScreenState extends State<EscalaPlantaoScreen> {
 
   int _selectedDateChipIndex = 3;
   bool _isDiurno = true;
+  bool _isLoading = true;
+  String? _errorMessage;
 
-  final List<Map<String, String>> _medicosDiurno = [
-    {'nome': 'Dr. João Silva', 'especialidade': 'Clínica Geral', 'contato': 'Ramal 101'},
-    {'nome': 'Dra. Maria Santos', 'especialidade': 'Pediatria', 'contato': 'Ramal 102'},
-    {'nome': 'Dr. Carlos Oliveira', 'especialidade': 'Ortopedia', 'contato': 'Ramal 103'},
-    {'nome': 'Dra. Fernanda Lima', 'especialidade': 'Ginecologia', 'contato': 'Ramal 104'},
-  ];
-
-  final List<Map<String, String>> _medicosNoturno = [
-    {'nome': 'Dr. Pedro Alves', 'especialidade': 'Clínica Geral', 'contato': 'Ramal 105'},
-    {'nome': 'Dra. Ana Costa', 'especialidade': 'Emergência', 'contato': 'Ramal 106'},
-  ];
+  List<DoctorModel> _todosOsMedicos = [];
 
   final List<DateTime> _datasReaisChips = List.generate(7, (index) {
     return DateTime.now().subtract(const Duration(days: 3)).add(Duration(days: index));
@@ -41,17 +36,52 @@ class _EscalaPlantaoScreenState extends State<EscalaPlantaoScreen> {
   late DateTime _dataSelecionadaChip;
   List<String> get _diasSemanaChips => _datasReaisChips.map((date) => date.day.toString()).toList();
 
-
- @override
+  @override
   void initState() {
     super.initState();
     _dataSelecionadaChip = _datasReaisChips[_selectedDateChipIndex];
+    _carregarDadosDaApi();
+  }
+
+  Future<void> _carregarDadosDaApi() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final url = Uri.parse('http://localhost:8080/api/doctors/');
+      final response = await http.get(url).timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> dadosJson = jsonDecode(utf8.decode(response.bodyBytes));
+        setState(() {
+          _todosOsMedicos = dadosJson.map((json) => DoctorModel.fromJson(json)).toList();
+        });
+      } else {
+        throw Exception('Falha ao carregar dados do servidor: ${response.statusCode}');
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Não foi possível conectar à API. Verifique a conexão.';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  List<DoctorModel> get _medicosFiltrados {
+    return _todosOsMedicos.where((medico) {
+      final horaInicio = int.tryParse(medico.horario_inicio.split(':')[0]) ?? 0;
+      final isMedicoDiurno = horaInicio >= 7 && horaInicio < 19;
+      return _isDiurno ? isMedicoDiurno : !isMedicoDiurno;
+    }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    final medicosExibidos = _isDiurno ? _medicosDiurno : _medicosNoturno;
-
     return Scaffold(
       appBar: const CustomAppBar(title: "Saúde Correntes"),
       body: Column(
@@ -86,7 +116,7 @@ class _EscalaPlantaoScreenState extends State<EscalaPlantaoScreen> {
                       const SizedBox(height: 16),
                       _buildTurnoSelector(),
                       const SizedBox(height: 16),
-                      _buildMedicosTable(medicosExibidos),
+                      _buildBodyContent(),
                       const SizedBox(height: 20),
                       Center(
                         child: Text(
@@ -105,6 +135,22 @@ class _EscalaPlantaoScreenState extends State<EscalaPlantaoScreen> {
       ),
       bottomNavigationBar: BottomNavBar(selectedIndex: _bottomNavIndex),
     );
+  }
+  
+  Widget _buildBodyContent() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_errorMessage != null) {
+      return Center(
+        child: Text(
+          _errorMessage!,
+          style: const TextStyle(color: Colors.red, fontSize: 16),
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+    return _buildMedicosTable(_medicosFiltrados);
   }
 
   String _formatDate(DateTime date) {
@@ -128,6 +174,8 @@ class _EscalaPlantaoScreenState extends State<EscalaPlantaoScreen> {
                   _selectedDateChipIndex = index;
                   _dataSelecionadaChip = _datasReaisChips[index];
                 });
+                // Note: Aqui você poderia re-chamar a API se a data fizesse parte da busca
+                // _carregarDadosDaApi(); 
               },
               child: Container(
                 width: 60,
@@ -165,18 +213,13 @@ class _EscalaPlantaoScreenState extends State<EscalaPlantaoScreen> {
         Expanded(
           child: OutlinedButton(
             onPressed: () {
-              setState(() {
-                _isDiurno = true;
-              });
+              setState(() { _isDiurno = true; });
             },
             style: OutlinedButton.styleFrom(
               backgroundColor: _isDiurno ? activeBgColor : Colors.transparent,
               side: BorderSide(color: _isDiurno ? activeColor : Colors.grey),
               shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(8),
-                  bottomLeft: Radius.circular(8),
-                ),
+                borderRadius: BorderRadius.only( topLeft: Radius.circular(8), bottomLeft: Radius.circular(8), ),
               ),
               padding: const EdgeInsets.symmetric(vertical: 12)
             ),
@@ -186,18 +229,13 @@ class _EscalaPlantaoScreenState extends State<EscalaPlantaoScreen> {
         Expanded(
           child: OutlinedButton(
             onPressed: () {
-              setState(() {
-                _isDiurno = false;
-              });
+              setState(() { _isDiurno = false; });
             },
             style: OutlinedButton.styleFrom(
               backgroundColor: !_isDiurno ? activeBgColor : Colors.transparent,
               side: BorderSide(color: !_isDiurno ? activeColor : Colors.grey),
                shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(8),
-                  bottomRight: Radius.circular(8),
-                ),
+                borderRadius: BorderRadius.only( topRight: Radius.circular(8), bottomRight: Radius.circular(8), ),
               ),
               padding: const EdgeInsets.symmetric(vertical: 12)
             ),
@@ -208,7 +246,7 @@ class _EscalaPlantaoScreenState extends State<EscalaPlantaoScreen> {
     );
   }
 
-  Widget _buildMedicosTable(List<Map<String, String>> medicos) {
+  Widget _buildMedicosTable(List<DoctorModel> medicos) {
     if (medicos.isEmpty) {
       return Center(
         child: Padding(
@@ -246,9 +284,9 @@ class _EscalaPlantaoScreenState extends State<EscalaPlantaoScreen> {
               padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 4.0),
               child: Row(
                 children: <Widget>[
-                  Expanded(flex: 3, child: Text(medico['nome']!, style: TextStyle(fontWeight: FontWeight.w500, color: Colors.black87))),
-                  Expanded(flex: 3, child: Text(medico['especialidade']!, style: TextStyle(color: Colors.grey[700]))),
-                  Expanded(flex: 2, child: Text(medico['contato']!, style: TextStyle(color: Colors.grey[700]))),
+                  Expanded(flex: 3, child: Text(medico.nome, style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.black87))),
+                  Expanded(flex: 3, child: Text(medico.especialidade, style: TextStyle(color: Colors.grey[700]))),
+                  Expanded(flex: 2, child: Text(medico.crm, style: TextStyle(color: Colors.grey[700]))),
                 ],
               ),
             );
