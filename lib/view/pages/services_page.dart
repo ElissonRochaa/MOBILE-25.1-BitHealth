@@ -15,7 +15,7 @@ class ServicesPage extends StatefulWidget {
 class _ServicesPageState extends State<ServicesPage> {
   final TextEditingController _serviceController = TextEditingController();
   String _serviceType = 'Todos';
-  List<String> serviceTypes = ['Todos', 'Exames Laboratoriais', 'Consulta Clínica Geral'];
+  Set<String> availableServiceTypes = {'Todos'};
 
   late final ServicesController _servicesController;
 
@@ -38,6 +38,9 @@ class _ServicesPageState extends State<ServicesPage> {
     setState(() {
       _isLoading = _servicesController.isLoading;
       _allServices = _servicesController.servicesList;
+
+      final types = _allServices.map((s) => _extractServiceType(s.nome)).toSet();
+      availableServiceTypes = {'Todos', ...types};
 
       _applyFilters();
     });
@@ -64,20 +67,15 @@ class _ServicesPageState extends State<ServicesPage> {
   }
 
   void _applyFilters() {
-    String searchText = _serviceController.text.toLowerCase();
-    String selectedType = _serviceType;
+    final searchText = _serviceController.text.toLowerCase();
+    final selectedType = _serviceType;
 
     setState(() {
       _filteredServices = _allServices.where((service) {
         final matchesName = service.nome.toLowerCase().contains(searchText);
-        bool matchesType = selectedType == 'Todos';
-        if (selectedType == 'Consultas' && service.nome.toLowerCase().contains('consulta')) {
-          matchesType = true;
-        } else if (selectedType == 'Exames' && service.nome.toLowerCase().contains('exame')) {
-          matchesType = true;
-        } else if (selectedType == service.nome) {
-          matchesType = true;
-        }
+        final serviceType = _extractServiceType(service.nome);
+        final matchesType = selectedType == 'Todos' || serviceType == selectedType;
+
         return matchesName && matchesType;
       }).toList();
     });
@@ -86,6 +84,14 @@ class _ServicesPageState extends State<ServicesPage> {
   void _onSearchChanged(String value) {
     _applyFilters();
   }
+
+  String _extractServiceType(String nome) {
+    final lower = nome.toLowerCase();
+    if (lower.contains('consulta')) return 'Consultas';
+    if (lower.contains('exame')) return 'Exames';
+    return 'Outros';
+  }
+
 
   void _onOptionSelected(String option) {
     setState(() {
@@ -115,7 +121,7 @@ class _ServicesPageState extends State<ServicesPage> {
               title: "Buscar Serviços",
               subtitle: "Por nome ou tipo",
               searchHint: "Nome do serviço...",
-              options: serviceTypes,
+              options: availableServiceTypes.toList(),
               selectedOption: _serviceType,
               searchController: _serviceController,
               onSearchChanged: _onSearchChanged,
