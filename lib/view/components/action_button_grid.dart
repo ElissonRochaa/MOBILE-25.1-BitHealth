@@ -6,24 +6,10 @@ class ActionButtonGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final buttons = [
-      _ButtonData("Médicos", Icons.person, () {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          '/medicos',
-          (Route<dynamic> route) => false,
-        );
-      }),
       _ButtonData("Plantões", Icons.access_time, () {
         Navigator.pushNamedAndRemoveUntil(
           context,
           '/plantoes',
-          (Route<dynamic> route) => false,
-        );
-      }),
-      _ButtonData("Medicamentos", Icons.medication, () {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          '/medicamentos',
           (Route<dynamic> route) => false,
         );
       }),
@@ -34,13 +20,6 @@ class ActionButtonGrid extends StatelessWidget {
           (Route<dynamic> route) => false,
         );
       }),
-      _ButtonData("Serviços", Icons.list, () {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          '/servicos',
-          (Route<dynamic> route) => false,
-        );
-      }),
       _ButtonData("Notícias", Icons.article, () {
         Navigator.pushNamedAndRemoveUntil(
           context,
@@ -48,17 +27,10 @@ class ActionButtonGrid extends StatelessWidget {
           (Route<dynamic> route) => false,
         );
       }),
-      _ButtonData("Notificações", Icons.notifications, () {
+      _ButtonData("Meu perfil", Icons.person, () {
         Navigator.pushNamedAndRemoveUntil(
           context,
           '/notificacoes',
-          (Route<dynamic> route) => false,
-        );
-      }),
-      _ButtonData("Mapa", Icons.map, () {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          '/mapa',
           (Route<dynamic> route) => false,
         );
       }),
