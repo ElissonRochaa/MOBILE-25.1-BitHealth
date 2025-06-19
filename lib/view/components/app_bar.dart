@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bithealth_front_end/view/components/ThemeToggleButton.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -6,7 +7,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Color? backgroundColor;
   final Color? foregroundColor;
   final double elevation;
-  final List<Widget>? actions;
 
   const CustomAppBar({
     super.key,
@@ -15,7 +15,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.backgroundColor,
     this.foregroundColor,
     this.elevation = 0,
-    this.actions,
   });
 
   @override
@@ -27,11 +26,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: backgroundColor ?? theme.appBarTheme.backgroundColor,
       foregroundColor: foregroundColor ?? theme.appBarTheme.foregroundColor,
       elevation: elevation,
-      actions: actions,
+      centerTitle: centerTitle,
       iconTheme: IconThemeData(
         color: foregroundColor ?? theme.appBarTheme.foregroundColor,
       ),
-      centerTitle: centerTitle,
       title: Row(
         children: [
           Image.asset(
@@ -47,6 +45,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ],
       ),
+      actions: const [
+        ThemeToggleButton(),
+      ],
     );
   }
 

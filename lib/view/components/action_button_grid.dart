@@ -27,11 +27,42 @@ class ActionButtonGrid extends StatelessWidget {
           (Route<dynamic> route) => false,
         );
       }),
-      _ButtonData("Meu perfil", Icons.person, () {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          '/notificacoes',
-          (Route<dynamic> route) => false,
+      _ButtonData("Ajuda", Icons.help_outline, () {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Ajuda - Funcionalidades do App'),
+              content: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHelpItem(Icons.access_time, 'Plantões', 'Visualize seus plantões médicos e horários de trabalho.'),
+                    const SizedBox(height: 8),
+                    _buildHelpItem(Icons.vaccines, 'Vacinação', 'Acompanhe seu calendário de vacinação e histórico de vacinas.'),
+                    const SizedBox(height: 8),
+                    _buildHelpItem(Icons.article, 'Notícias', 'Fique por dentro das últimas notícias da área da saúde.'),
+                    const SizedBox(height: 8),
+                    _buildHelpItem(Icons.map, 'Mapa', 'Encontre unidades de saúde próximas no mapa.'),
+                    const SizedBox(height: 8),
+                    _buildHelpItem(Icons.medical_services, 'Médicos', 'Consulte a lista de médicos disponíveis.'),
+                    const SizedBox(height: 8),
+                    _buildHelpItem(Icons.medication, 'Medicamentos', 'Veja seus medicamentos e prescrições.'),
+                    const SizedBox(height: 8),
+                    _buildHelpItem(Icons.build, 'Serviços', 'Conheça os serviços de saúde disponíveis.'),
+                    const SizedBox(height: 8),
+                    _buildHelpItem(Icons.home, 'Home', 'Volte para a tela inicial do app.'),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Fechar'),
+                ),
+              ],
+            );
+          },
         );
       }),
     ];
@@ -257,4 +288,24 @@ class _GridButtonModernState extends State<_GridButtonModern>
       },
     );
   }
+}
+
+
+Widget _buildHelpItem(IconData icon, String title, String description) {
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Icon(icon, size: 24, color: Colors.blueAccent),
+      const SizedBox(width: 8),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(description, style: const TextStyle(fontSize: 13)),
+          ],
+        ),
+      ),
+    ],
+  );
 }

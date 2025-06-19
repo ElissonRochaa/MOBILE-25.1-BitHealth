@@ -15,7 +15,7 @@ class ThemeSwitch extends StatelessWidget {
             themeProvider.toggleTheme();
           },
           activeColor: Colors.blue,
-        );
+        ); 
       },
     );
   }

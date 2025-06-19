@@ -126,6 +126,7 @@ class _DoctorsPageState extends State<DoctorsPage> {
                                   especialidade: doctor.especialidade,
                                   unidade: doctor.unidade_saude_name,
                                   data: doctor.data_plantao,
+                                  tipo: doctor.tipo,
                                   inicio: doctor.horario_inicio,
                                   fim: doctor.horario_fim,
                                 );
@@ -147,6 +148,7 @@ class _DoctorsPageState extends State<DoctorsPage> {
     required String data,
     required String inicio,
     required String fim,
+    required String tipo
   }) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -165,7 +167,7 @@ class _DoctorsPageState extends State<DoctorsPage> {
             ),
             const SizedBox(height: 8),
             Text(
-              'CRM: $crm • $especialidade',
+              'CRM: $crm • $especialidade • $tipo',
               style: const TextStyle(fontSize: 14, color: Colors.grey),
             ),
             const SizedBox(height: 12),

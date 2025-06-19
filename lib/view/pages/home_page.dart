@@ -17,77 +17,7 @@ class HomePage extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              const SizedBox(height: 16),
-              Center(
-                child: Consumer<ThemeProvider>(
-                  builder: (context, themeProvider, child) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(25),
-                        color: Theme.of(context).colorScheme.surface,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(25),
-                        onTap: () {
-                          themeProvider.toggleTheme();
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20, 
-                            vertical: 12
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              AnimatedSwitcher(
-                                duration: const Duration(milliseconds: 300),
-                                transitionBuilder: (child, animation) {
-                                  return ScaleTransition(
-                                    scale: animation,
-                                    child: child,
-                                  );
-                                },
-                                child: Icon(
-                                  themeProvider.isDarkMode 
-                                      ? Icons.wb_sunny 
-                                      : Icons.nightlight_round,
-                                  key: ValueKey(themeProvider.isDarkMode),
-                                  color: themeProvider.isDarkMode 
-                                      ? Colors.orange 
-                                      : Colors.indigo,
-                                  size: 24,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              AnimatedDefaultTextStyle(
-                                duration: const Duration(milliseconds: 300),
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Theme.of(context).colorScheme.onSurface,
-                                ),
-                                child: Text(
-                                  themeProvider.isDarkMode 
-                                      ? 'Modo Claro' 
-                                      : 'Modo Escuro',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              
+              const SizedBox(height: 16),              
               const SizedBox(height: 24),
               
               const Text(
