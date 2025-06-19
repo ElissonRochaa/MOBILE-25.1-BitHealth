@@ -3,7 +3,6 @@ import 'package:bithealth_front_end/view/pages/doctor_page.dart';
 import 'package:bithealth_front_end/provider/theme_provider.dart';
 import 'package:bithealth_front_end/view/pages/forgot_password.dart';
 import 'package:bithealth_front_end/theme/app_themes.dart';
-import 'package:bithealth_front_end/view/pages/help_page.dart';
 import 'package:bithealth_front_end/view/pages/medical_shifts.dart';
 import 'package:bithealth_front_end/view/pages/register_page.dart';
 import 'package:bithealth_front_end/view/pages/login_page.dart';
